@@ -20,4 +20,17 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.multiformats/java-multibase
     implementation 'com.github.multiformats:java-multibase:v1.1.0'
     implementation "com.zmannotes:varint:1.0.0"
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "${jvmTarget}"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "${jvmTarget}"
 }
