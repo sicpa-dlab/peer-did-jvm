@@ -1,0 +1,36 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version "${kotlinJvm}"
+    id "org.jlleitschuh.gradle.ktlint" version "${ktlintGradle}"
+}
+
+group = 'org.dif'
+version = '0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://maven.scijava.org/content/groups/public'
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.10'
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation 'com.google.code.gson:gson:2.8.8'
+    // https://mvnrepository.com/artifact/com.github.multiformats/java-multibase
+    implementation 'com.github.multiformats:java-multibase:v1.1.0'
+    implementation "com.zmannotes:varint:1.0.0"
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "${jvmTarget}"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "${jvmTarget}"
+}
