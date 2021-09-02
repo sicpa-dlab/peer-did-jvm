@@ -26,11 +26,11 @@ class TestDemo {
             )
         )
         val service = """
-            {
-                "type": "didcommmessaging",
-                "serviceEndpoint": "https://example.com/endpoint",
-                "routingKeys": ["did:example:somemediator#somekey"]
-            }
+                {
+                    "type": "didcommmessaging",
+                    "serviceEndpoint": "https://example.com/endpoint1",
+                    "routingKeys": ["did:example:somemediator#somekey1"]
+                }
         """
 
         val peerDIDAlgo0 = createPeerDIDNumalgo0(signingKeys[0])

@@ -2,7 +2,10 @@
 
 package org.dif.peerdid
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonSyntaxException
+import com.google.gson.internal.LinkedTreeMap
 import com.zman.varint.VarInt
 import io.ipfs.multibase.Base58
 import io.ipfs.multibase.Multibase
@@ -15,16 +18,15 @@ import org.dif.model.PublicKeyType
 import org.dif.model.PublicKeyTypeAgreement
 import org.dif.model.PublicKeyTypeAuthentication
 import java.nio.ByteBuffer
-import java.util.HashMap
 
 internal fun buildDIDDocNumalgo0(peerDID: PeerDID): String {
-    val inceptionKey = peerDID.substring(11)
+    val inceptionKey = peerDID.substring(10)
     val encodingAlgorithm = peerDID[10]
 
     if (!isInEncodingTypes(encodingAlgorithm))
         throw IllegalArgumentException("Unsupported encoding algorithm of key: $encodingAlgorithm")
 
-    val decodedEncnumbasis = decodeEncnumbasis(inceptionKey, peerDID)
+    val decodedEncnumbasis = decodeEncnumbasis(inceptionKey)
     val gson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     val diddoc = mapOf(
         "id" to peerDID,
@@ -44,23 +46,25 @@ internal fun buildDIDDocNumalgo2(peerDID: PeerDID): String {
             if (!isInEncodingTypes(transform))
                 throw IllegalArgumentException("Unsupported transform part of PeerDID: $transform")
 
-            keysWithoutPurposeCode.add(key.drop(2))
+            keysWithoutPurposeCode.add(key.drop(1))
         } else service = key.drop(1)
     }
-    val decodedEncnumbasises = keysWithoutPurposeCode.map { key -> decodeEncnumbasis(key, peerDID) }
-    val decodedService = decodeService(service, peerDID)
-
     val authentication = mutableListOf<Map<String, String>>()
     val keyAgreement = mutableListOf<Map<String, String>>()
-
-    for (i in decodedEncnumbasises.indices) {
-        if (PublicKeyTypeAuthentication.values().any { value -> value.name == decodedEncnumbasises[i]["type"] })
-            authentication.add(decodedEncnumbasises[i])
-        else if (PublicKeyTypeAgreement.values().any { value -> value.name == decodedEncnumbasises[i]["type"] })
-            keyAgreement.add(decodedEncnumbasises[i])
-        else
-            throw IllegalArgumentException("Invalid key type of: ${keysList[i]}")
+    for (key in keysWithoutPurposeCode) {
+        val decodedEncnumbasis = decodeEncnumbasis(key)
+        val DIDDocSection = mapOf(
+            "id" to peerDID.plus('#').plus(key),
+            "type" to decodedEncnumbasis.type.toString(),
+            "controller" to peerDID,
+            "publicKeyBase58" to decodedEncnumbasis.encodedValue
+        )
+        when (decodedEncnumbasis.type) {
+            is PublicKeyTypeAuthentication -> authentication.add(DIDDocSection)
+            is PublicKeyTypeAgreement -> keyAgreement.add(DIDDocSection)
+        }
     }
+    val decodedService = decodeService(service, peerDID)
 
     val gson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     val diddoc = mapOf(
@@ -76,37 +80,55 @@ private fun isInEncodingTypes(encodingAlgorithm: Char): Boolean {
     return EncodingType.values().any { type -> type.type == encodingAlgorithm }
 }
 
-private fun decodeService(encodedService: JSON, peerDID: PeerDID): Map<String, String> {
+private fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Map<String, String>> {
     val decodedService = Base64.decodeBase64(encodedService).decodeToString()
     val gson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
-    val serviceMap = gson.fromJson(decodedService, HashMap::class.java)
-    val serviceType = serviceMap.remove("t").toString().replace("dm", "didcommmessaging")
+    val serviceMapList = try {
+        gson.fromJson(decodedService, List::class.java) as List<LinkedTreeMap<String, String>>
+    } catch (e: JsonSyntaxException) {
+        listOf(gson.fromJson(decodedService, HashMap::class.java))
+    }
+    val finalServiceMapList = mutableListOf<Map<String, String>>()
+    for (serviceMap in serviceMapList) {
+        val serviceType = serviceMap.remove("t").toString().replace("dm", "didcommmessaging")
 
-    return mapOf(
-        "id" to peerDID.plus('#').plus(serviceType),
-        "type" to serviceType,
-        "serviceEndpoint" to serviceMap.remove("s").toString(),
-        "routingKeys" to serviceMap.remove("r").toString()
-    )
+        val service = mapOf(
+            "id" to peerDID.plus('#').plus(serviceType),
+            "type" to serviceType,
+            "serviceEndpoint" to serviceMap.remove("s").toString(),
+            "routingKeys" to serviceMap.remove("r").toString()
+        )
+        finalServiceMapList.add(service)
+    }
+    return finalServiceMapList
 }
 
-private fun decodeEncnumbasis(encnumbasis: String, peerDID: PeerDID): Map<String, String> {
-    val decodedEncnumbasis = Base58.decode(encnumbasis)
+private fun decodeEncnumbasis(encnumbasis: String): PublicKey<PublicKeyType> {
+    val encodingChar = encnumbasis[0]
+    val encodedValue = encnumbasis.drop(1)
+    val encodingType = getEncodingTypeByChar(encodingChar)
+    val decodedEncnumbasis = Base58.decode(encodedValue)
     val codec = getCodec(decodedEncnumbasis)
     val decodedEncnumbasisWithoutPrefix = removePrefix(decodedEncnumbasis)
     val publicKey = Base58.encode(decodedEncnumbasisWithoutPrefix.toByteArray())
-    return mapOf(
-        "id" to peerDID.plus('#').plus(encnumbasis),
-        "type" to codec,
-        "controller" to peerDID,
-        "publicKeyBase58" to publicKey
+    return PublicKey(
+        encodedValue = publicKey,
+        type = codec,
+        encodingType = encodingType,
     )
 }
 
-private fun getCodec(data: ByteArray): String {
+private fun getEncodingTypeByChar(encodingChar: Char): EncodingType {
+    when (encodingChar) {
+        'z' -> return EncodingType.BASE58
+        else -> throw IllegalArgumentException("Invalid encodingType: $encodingChar")
+    }
+}
+
+private fun getCodec(data: ByteArray): PublicKeyType {
     val prefix = extractPrefix(data)
-    PublicKeyTypeAgreement.values().forEach { type -> if (type.prefix() == prefix) return type.name }
-    PublicKeyTypeAuthentication.values().forEach { type -> if (type.prefix() == prefix) return type.name }
+    PublicKeyTypeAgreement.values().forEach { type -> if (type.prefix() == prefix) return type }
+    PublicKeyTypeAuthentication.values().forEach { type -> if (type.prefix() == prefix) return type }
     throw IllegalArgumentException("Prefix $prefix not supported")
 }
 
@@ -122,13 +144,23 @@ private fun removePrefix(data: ByteArray): List<Byte> {
 }
 
 internal fun createEncnumbasis(key: PublicKey<out PublicKeyType>): String {
-    val decodedKey = Base58.decode(key.encodedValue)
+    val decodedKey = decodeKey(key)
     val prefixedDecodedKey = addPrefix(key.type, decodedKey)
     val encnumbasis = Multibase.encode(Multibase.Base.Base58BTC, prefixedDecodedKey)
     if (encnumbasis.length < 47 || encnumbasis.length > 48) {
         throw IllegalArgumentException("Invalid key: $key")
     }
     return encnumbasis
+}
+
+private fun decodeKey(key: PublicKey<out PublicKeyType>): ByteArray {
+    try {
+        when (key.encodingType) {
+            EncodingType.BASE58 -> return Base58.decode(key.encodedValue)
+        }
+    } catch (e: IllegalStateException) {
+        throw IllegalArgumentException("Key: $key is not correctly encoded")
+    }
 }
 
 private fun addPrefix(keyType: PublicKeyType, decodedKey: ByteArray): ByteArray {
@@ -138,6 +170,7 @@ private fun addPrefix(keyType: PublicKeyType, decodedKey: ByteArray): ByteArray 
 }
 
 internal fun encodeService(service: JSON): String {
+    if (!isJSONValid(service)) throw IllegalArgumentException("Service is not JSON")
     val serviceToEncode = (
         service.replace(Regex("[\n\t\\s]*"), "")
             .replace("type", "t")
@@ -146,4 +179,15 @@ internal fun encodeService(service: JSON): String {
             .replace("routingKeys", "r")
         )
     return ".S" + Base64.encodeBase64(serviceToEncode.toByteArray()).decodeToString()
+}
+
+fun isJSONValid(jsonInString: String): Boolean {
+    val gson = Gson()
+    return try {
+        if (!jsonInString.contains("{")) return false
+        gson.fromJson(jsonInString, Any::class.java)
+        true
+    } catch (ex: JsonSyntaxException) {
+        false
+    }
 }

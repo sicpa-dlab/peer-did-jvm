@@ -29,8 +29,8 @@ fun createPeerDIDNumalgo2(
 ): PeerDID {
     val encodedEncryptionKeys = encryptionKeys.map { publicKey -> createEncnumbasis(publicKey) }
     val encodedSigningKeys = signingKeys.map { publicKey -> createEncnumbasis(publicKey) }
-    val encryptionKeysStr = encodedEncryptionKeys.joinToString(".E", ".E")
-    val signingKeysStr = encodedSigningKeys.joinToString(".V", ".V")
+    val encryptionKeysStr = if (encryptionKeys.isEmpty()) "" else encodedEncryptionKeys.joinToString(".E", ".E")
+    val signingKeysStr = if (signingKeys.isEmpty()) "" else encodedSigningKeys.joinToString(".V", ".V")
     val encodedService = encodeService(service)
 
     val peerdid = "did:peer:2".plus(encryptionKeysStr).plus(signingKeysStr).plus(encodedService)
