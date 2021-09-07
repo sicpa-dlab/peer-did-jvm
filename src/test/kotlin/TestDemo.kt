@@ -6,7 +6,7 @@ import org.dif.model.PublicKeyTypeAuthentication
 import org.dif.peerdid.createPeerDIDNumalgo0
 import org.dif.peerdid.createPeerDIDNumalgo2
 import org.dif.peerdid.resolvePeerDID
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 class TestDemo {
     @Test

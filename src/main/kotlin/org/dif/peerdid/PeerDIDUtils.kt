@@ -28,10 +28,17 @@ internal fun buildDIDDocNumalgo0(peerDID: PeerDID): String {
 
     val decodedEncnumbasis = decodeEncnumbasis(inceptionKey)
     val gson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
+    val authentication = mapOf(
+        "id" to peerDID.plus("#${inceptionKey.drop(1)}"),
+        "type" to decodedEncnumbasis.type.toString(),
+        "controller" to peerDID,
+        "publicKeyBase58" to decodedEncnumbasis.encodedValue
+    )
     val diddoc = mapOf(
         "id" to peerDID,
-        "authentication" to gson.toJsonTree(decodedEncnumbasis)
+        "authentication" to gson.toJsonTree(authentication)
     )
+
     return gson.toJson(diddoc)
 }
 
@@ -54,7 +61,7 @@ internal fun buildDIDDocNumalgo2(peerDID: PeerDID): String {
     for (key in keysWithoutPurposeCode) {
         val decodedEncnumbasis = decodeEncnumbasis(key)
         val DIDDocSection = mapOf(
-            "id" to peerDID.plus('#').plus(key),
+            "id" to peerDID.plus('#').plus(key.drop(1)),
             "type" to decodedEncnumbasis.type.toString(),
             "controller" to peerDID,
             "publicKeyBase58" to decodedEncnumbasis.encodedValue
@@ -88,19 +95,18 @@ private fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Map<Stri
     } catch (e: JsonSyntaxException) {
         listOf(gson.fromJson(decodedService, HashMap::class.java))
     }
-    val finalServiceMapList = mutableListOf<Map<String, String>>()
-    for (serviceMap in serviceMapList) {
+    var serviceNumber = 0
+    return serviceMapList.map { serviceMap ->
         val serviceType = serviceMap.remove("t").toString().replace("dm", "didcommmessaging")
-
         val service = mapOf(
-            "id" to peerDID.plus('#').plus(serviceType),
+            "id" to peerDID.plus("#$serviceType").plus("#$serviceNumber"),
             "type" to serviceType,
             "serviceEndpoint" to serviceMap.remove("s").toString(),
             "routingKeys" to serviceMap.remove("r").toString()
         )
-        finalServiceMapList.add(service)
+        serviceNumber++
+        service
     }
-    return finalServiceMapList
 }
 
 private fun decodeEncnumbasis(encnumbasis: String): PublicKey<PublicKeyType> {
@@ -159,7 +165,7 @@ private fun decodeKey(key: PublicKey<out PublicKeyType>): ByteArray {
             EncodingType.BASE58 -> return Base58.decode(key.encodedValue)
         }
     } catch (e: IllegalStateException) {
-        throw IllegalArgumentException("Key: $key is not correctly encoded")
+        throw IllegalArgumentException("Key: $key is not correctly encoded", e)
     }
 }
 

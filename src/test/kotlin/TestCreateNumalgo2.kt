@@ -9,25 +9,22 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class TestCreateNumalgo2 {
-    @Test
-    fun testCreateNumalgo2Positive() {
-        val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            )
-        )
-        val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
-        )
-        val service = """[
+    val VALID_X25519_KEY = PublicKeyAgreement(
+        encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
+        type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
+    )
+
+    val VALID_ED25519_KEY_1 = PublicKeyAuthentication(
+        encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+        type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+    )
+    val VALID_ED25519_KEY_2 = PublicKeyAuthentication(
+        encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
+        type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+    )
+
+    val VALID_SERVICE =
+        """[
         {
             "type": "didcommmessaging",
             "serviceEndpoint": "https://example.com/endpoint",
@@ -40,6 +37,25 @@ class TestCreateNumalgo2 {
         }
         ]
         """
+
+    val VALID_SERVICE_NOT_ARRAY =
+        """
+        {
+            "type": "didcommmessaging",
+            "serviceEndpoint": "https://example.com/endpoint",
+            "routingKeys": ["did:example:somemediator#somekey"]
+        }
+        """
+
+    @Test
+    fun testCreateNumalgo2Positive() {
+        val encryptionKeys = listOf(
+            VALID_X25519_KEY
+        )
+        val signingKeys = listOf(
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
+        )
+        val service = VALID_SERVICE
 
         val peerDIDAlgo2 = createPeerDIDNumalgo2(
             encryptionKeys = encryptionKeys, signingKeys = signingKeys,
@@ -57,31 +73,56 @@ class TestCreateNumalgo2 {
     }
 
     @Test
+    fun testCreateNumalgo2PositiveServiceNotArray() {
+        val encryptionKeys = listOf(
+            VALID_X25519_KEY
+        )
+        val signingKeys = listOf(
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
+        )
+        val service = VALID_SERVICE_NOT_ARRAY
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+            service = service
+        )
+
+        assert(isPeerDID(peerDIDAlgo2))
+    }
+
+    @Test
+    fun testCreateNumalgo2PositiveServiceArrayOf1Element() {
+        val encryptionKeys = listOf(
+            VALID_X25519_KEY
+        )
+        val signingKeys = listOf(
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
+        )
+        val service = """
+        [
+            {
+                "type": "didcommmessaging",
+                "serviceEndpoint": "https://example.com/endpoint",
+                "routingKeys": ["did:example:somemediator#somekey"]
+            }       
+        ]
+        """
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+            service = service
+        )
+
+        assert(isPeerDID(peerDIDAlgo2))
+    }
+
+    @Test
     fun testCreateNumalgo2WithoutEncryptionKeys() {
         val encryptionKeys = listOf<PublicKeyAgreement>()
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         val peerDIDAlgo2 = createPeerDIDNumalgo2(
             encryptionKeys = encryptionKeys, signingKeys = signingKeys,
@@ -101,25 +142,10 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2EmptySigningKeys() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            )
+            VALID_X25519_KEY
         )
         val signingKeys = listOf<PublicKeyAuthentication>()
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         val peerDIDAlgo2 = createPeerDIDNumalgo2(
             encryptionKeys = encryptionKeys, signingKeys = signingKeys,
@@ -143,28 +169,9 @@ class TestCreateNumalgo2 {
             )
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo2(
@@ -177,10 +184,7 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2WrongSigningKey() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            )
+            VALID_X25519_KEY
         )
         val signingKeys = listOf(
             PublicKeyAuthentication(
@@ -192,19 +196,7 @@ class TestCreateNumalgo2 {
                 type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
             )
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo2(
@@ -217,20 +209,10 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2WrongService() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            )
+            VALID_X25519_KEY
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
         val service = """..."""
         assertThrows<IllegalArgumentException> {
@@ -244,38 +226,16 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2EncryptionKeysAndSigningAreMoreThan1ElementArray() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            ),
+            VALID_X25519_KEY,
             PublicKeyAgreement(
                 encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
                 type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
             )
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         val peerDIDAlgo2 = createPeerDIDNumalgo2(
             encryptionKeys = encryptionKeys, signingKeys = signingKeys,
@@ -287,24 +247,14 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2ServiceHasMoreFieldsThanInConversionTable() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            ),
+            VALID_X25519_KEY,
             PublicKeyAgreement(
                 encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
                 type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
             )
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
         val service = """{
         "type": "didcommmessaging",
@@ -325,20 +275,10 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2ServiceIsNotdidcommmessaging() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            )
+            VALID_X25519_KEY
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
         val service = """{
         "type": "example1",
@@ -357,20 +297,10 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2ServiceIsEmptyString() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            )
+            VALID_X25519_KEY
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
         val service = """"""
 
@@ -391,28 +321,9 @@ class TestCreateNumalgo2 {
             )
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo2(
@@ -425,10 +336,7 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2MalformedSigningKeyNotBase58Encoded() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            )
+            VALID_X25519_KEY
         )
         val signingKeys = listOf(
             PublicKeyAuthentication(
@@ -440,19 +348,7 @@ class TestCreateNumalgo2 {
                 type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
             )
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo2(
@@ -471,28 +367,9 @@ class TestCreateNumalgo2 {
             )
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo2(
@@ -511,28 +388,9 @@ class TestCreateNumalgo2 {
             )
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
-            )
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo2(
@@ -545,10 +403,7 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2MalformedLongSigningKey() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            )
+            VALID_X25519_KEY
         )
         val signingKeys = listOf(
             PublicKeyAuthentication(
@@ -560,19 +415,7 @@ class TestCreateNumalgo2 {
                 type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
             )
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo2(
@@ -585,10 +428,7 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2MalformedShortSigningKey() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
-            )
+            VALID_X25519_KEY
         )
         val signingKeys = listOf(
             PublicKeyAuthentication(
@@ -600,19 +440,7 @@ class TestCreateNumalgo2 {
                 type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
             )
         )
-        val service = """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
+        val service = VALID_SERVICE
 
         assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo2(
