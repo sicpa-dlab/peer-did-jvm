@@ -304,12 +304,14 @@ class TestCreateNumalgo2 {
         )
         val service = """"""
 
-        assertThrows<IllegalArgumentException> {
-            createPeerDIDNumalgo2(
-                encryptionKeys = encryptionKeys, signingKeys = signingKeys,
-                service = service
+        assert(
+            isPeerDID(
+                createPeerDIDNumalgo2(
+                    encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+                    service = service
+                )
             )
-        }
+        )
     }
 
     @Test

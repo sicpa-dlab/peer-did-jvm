@@ -60,6 +60,6 @@ class TestResolveNumalgo0 {
 
     @Test
     fun testResolveInvalidKeyType() {
-        assertThrows<IllegalArgumentException> { resolvePeerDID("did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V") }
+        assertThrows<IllegalArgumentException> { resolvePeerDID("did:peer:0z6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc") }
     }
 }

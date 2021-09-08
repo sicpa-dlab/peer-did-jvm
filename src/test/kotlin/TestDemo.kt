@@ -38,15 +38,15 @@ class TestDemo {
             encryptionKeys, signingKeys, service
         )
 
-        println("peer_did_algo_0:" + peerDIDAlgo0)
+        println("PeerDID algo 0:$peerDIDAlgo0")
         println("==================================")
-        println("peer_did_algo_2:" + peerDIDAlgo2)
+        println("PeerDID algo 2:$peerDIDAlgo2")
         println("==================================")
 
         val DIDDocAlgo0 = resolvePeerDID(peerDIDAlgo0)
         val DIDDocAlgo2 = resolvePeerDID(peerDIDAlgo2)
-        println("did_doc_algo_0:" + DIDDocAlgo0)
+        println("DIDDoc algo 0:$DIDDocAlgo0")
         println("==================================")
-        print("did_doc_algo_2:" + DIDDocAlgo2)
+        print("DIDDoc algo 2:$DIDDocAlgo2")
     }
 }
