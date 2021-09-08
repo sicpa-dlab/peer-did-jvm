@@ -179,9 +179,9 @@ private fun getEncodingTypeByChar(encodingChar: Char): EncodingType {
  */
 private fun getCodec(data: ByteArray): PublicKeyType {
     val prefix = extractPrefix(data)
-    PublicKeyTypeAgreement.values().forEach { type -> if (type.prefix() == prefix) return type }
-    PublicKeyTypeAuthentication.values().forEach { type -> if (type.prefix() == prefix) return type }
-    throw IllegalArgumentException("Prefix $prefix not supported")
+    return PublicKeyTypeAgreement.values().find { it.prefix() == prefix }
+        ?: PublicKeyTypeAuthentication.values().find { it.prefix() == prefix }
+        ?: throw IllegalArgumentException("Prefix $prefix not supported")
 }
 
 /** Extracts prefix from [data]
