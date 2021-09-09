@@ -7,6 +7,13 @@ import org.dif.model.PeerDID
 import org.dif.model.PublicKeyAgreement
 import org.dif.model.PublicKeyAuthentication
 
+/**
+ * Checks if [peerDID] param matches PeerDID spec
+ * @see
+ * <a href="https://identity.foundation/peer-did-method-spec/index.html#matching-regex">Specification</a>
+ * @param [peerDID] PeerDID to check
+ * @return true if [peerDID] matches spec, otherwise false
+ */
 fun isPeerDID(peerDID: String): Boolean {
     val regex =
         (
@@ -16,22 +23,52 @@ fun isPeerDID(peerDID: String): Boolean {
     return regex.matches(peerDID)
 }
 
-/** Creates [PeerDID] according to zero algorithm using [inceptionKey]*/
+/**
+ * Generates PeerDID according to the zero algorithm
+ * For this type of algorithm DIDDoc can be obtained from PeerDID
+ * @see
+ * <a href="https://identity.foundation/peer-did-method-spec/index.html#generation-method">Specification</a>
+ * @param [inceptionKey] the key that creates the DID and authenticates when exchanging it with the first peer
+ * @throws IllegalArgumentException if the [inceptionKey] is not correctly encoded
+ * @return generated PeerDID
+ */
 fun createPeerDIDNumalgo0(inceptionKey: PublicKeyAuthentication): PeerDID {
+    if (!checkKeyCorrectlyEncoded(inceptionKey.encodedValue, inceptionKey.encodingType))
+        throw IllegalArgumentException("Inception key $inceptionKey is not correctly encoded")
     return "did:peer:0".plus(createEncnumbasis(inceptionKey))
 }
 
-/** Creates [PeerDID] according to the second algorithm using [encryptionKeys], [signingKeys], [service]*/
+/**
+ * Generates PeerDID according to the second algorithm
+ * For this type of algorithm DIDDoc can be obtained from PeerDID
+ * @see
+ * <a href="https://identity.foundation/peer-did-method-spec/index.html#generation-method">Specification</a>
+ * @param [encryptionKeys] list of encryption keys
+ * @param [signingKeys] list of signing keys
+ * @param [service] JSON string conforming to the DID specification
+ * @throws IllegalArgumentException
+ * - if at least one of keys is not properly encoded
+ * - if service is not a valid JSON
+ * @return generated PeerDID
+ */
 fun createPeerDIDNumalgo2(
     encryptionKeys: List<PublicKeyAgreement>,
     signingKeys: List<PublicKeyAuthentication>,
     service: JSON
 ): PeerDID {
-    val encodedEncryptionKeys = encryptionKeys.map { publicKey -> createEncnumbasis(publicKey) }
-    val encodedSigningKeys = signingKeys.map { publicKey -> createEncnumbasis(publicKey) }
-    val encryptionKeysStr = encodedEncryptionKeys.joinToString(".E", ".E")
-    val signingKeysStr = encodedSigningKeys.joinToString(".V", ".V")
-    val encodedService = encodeService(service)
+    val encodedEncryptionKeys = encryptionKeys.map { publicKey ->
+        if (!checkKeyCorrectlyEncoded(publicKey.encodedValue, publicKey.encodingType))
+            throw IllegalArgumentException("Encryption key $publicKey is not correctly encoded")
+        createEncnumbasis(publicKey)
+    }
+    val encodedSigningKeys = signingKeys.map { publicKey ->
+        if (!checkKeyCorrectlyEncoded(publicKey.encodedValue, publicKey.encodingType))
+            throw IllegalArgumentException("Signing key $publicKey is not correctly encoded")
+        createEncnumbasis(publicKey)
+    }
+    val encryptionKeysStr = if (encryptionKeys.isEmpty()) "" else encodedEncryptionKeys.joinToString(".E", ".E")
+    val signingKeysStr = if (signingKeys.isEmpty()) "" else encodedSigningKeys.joinToString(".V", ".V")
+    val encodedService = if (service.isEmpty()) "" else encodeService(service)
 
     val peerdid = "did:peer:2".plus(encryptionKeysStr).plus(signingKeysStr).plus(encodedService)
     return peerdid

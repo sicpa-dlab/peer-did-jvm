@@ -5,7 +5,6 @@ import org.dif.peerdid.createPeerDIDNumalgo0
 import org.dif.peerdid.isPeerDID
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.IllegalStateException
 
 class TestCreateNumalgo0 {
     @Test
@@ -35,7 +34,7 @@ class TestCreateNumalgo0 {
             )
         )
 
-        assertThrows<IllegalStateException> { createPeerDIDNumalgo0(signingKeys[0]) }
+        assertThrows<IllegalArgumentException> { createPeerDIDNumalgo0(signingKeys[0]) }
     }
 
     @Test
