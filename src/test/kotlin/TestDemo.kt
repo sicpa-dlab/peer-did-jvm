@@ -25,13 +25,14 @@ class TestDemo {
                 encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
             )
         )
-        val service = """
+        val service =
+            """
                 {
                     "type": "didcommmessaging",
                     "serviceEndpoint": "https://example.com/endpoint1",
                     "routingKeys": ["did:example:somemediator#somekey1"]
                 }
-        """
+            """
 
         val peerDIDAlgo0 = createPeerDIDNumalgo0(signingKeys[0])
         val peerDIDAlgo2 = createPeerDIDNumalgo2(

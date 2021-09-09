@@ -115,6 +115,8 @@ private fun isInEncodingTypes(encodingAlgorithm: Char): Boolean {
 
 /**
  * Decodes [encodedService] according to PeerDID spec
+ * @see
+ * <a href="https://identity.foundation/peer-did-method-spec/index.html#example-2-abnf-for-peer-dids">Specification</a>
  * @param [encodedService] service to decode
  * @param [peerDID] PeerDID which will be used as an ID
  * @return decoded service
@@ -205,6 +207,8 @@ private fun removePrefix(data: ByteArray): List<Byte> {
 
 /**
  * Creates encnumbasis according to PeerDID spec
+ * @see
+ * <a href="https://identity.foundation/peer-did-method-spec/index.html#method-specific-identifier">Specification</a>
  * @param [key] public key
  * @throws IllegalArgumentException if key is invalid
  * @return encnumbasis
@@ -249,6 +253,7 @@ private fun addPrefix(keyType: PublicKeyType, decodedKey: ByteArray): ByteArray 
 /**
  * Encodes [service] according to the second algorithm.
  * For this type of algorithm DIDDoc can be obtained from PeerDID
+ * @see <a href="https://identity.foundation/peer-did-method-spec/index.html#generation-method">Specification</a>
  * @param [service] service to encode
  * @throws IllegalArgumentException if [service] is not JSON
  * @return encoded [service]

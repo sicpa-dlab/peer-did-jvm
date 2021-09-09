@@ -10,7 +10,9 @@ import org.dif.model.PeerDID
  * @param [versionId] a specific version of a [DIDDoc].
  *  If value is default, version of [DIDDoc] will be latest.
  *  [versionId] is not used for now, as we support only static layer where [DIDDoc] never changes
- * @throws IllegalArgumentException if [peerDID] parameter does not match [peerDID] spec
+ * @throws IllegalArgumentException
+ * - if [peerDID] parameter does not match [peerDID] spec
+ * - if a valid DIDDoc cannot be produced from the [peerDID]
  * @return resolved [DIDDoc] as JSON string
  */
 fun resolvePeerDID(peerDID: PeerDID, versionId: Int? = null): DIDDoc {
