@@ -133,7 +133,7 @@ private fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Map<Stri
     return serviceMapList.map { serviceMap ->
         val serviceType = serviceMap.remove("t").toString().replace("dm", "didcommmessaging")
         val service = mapOf(
-            "id" to peerDID.plus("#$serviceType").plus("#$serviceNumber"),
+            "id" to peerDID.plus("#$serviceType").plus("-$serviceNumber"),
             "type" to serviceType,
             "serviceEndpoint" to serviceMap.remove("s").toString(),
             "routingKeys" to serviceMap.remove("r").toString()
