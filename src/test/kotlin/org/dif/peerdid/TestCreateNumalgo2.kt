@@ -1,8 +1,10 @@
-import org.dif.model.EncodingType
-import org.dif.model.PublicKeyAgreement
-import org.dif.model.PublicKeyAuthentication
-import org.dif.model.PublicKeyTypeAgreement
-import org.dif.model.PublicKeyTypeAuthentication
+package org.dif.peerdid
+
+import org.dif.peerdid.model.EncodingType
+import org.dif.peerdid.model.PublicKeyAgreement
+import org.dif.peerdid.model.PublicKeyAuthentication
+import org.dif.peerdid.model.PublicKeyTypeAgreement
+import org.dif.peerdid.model.PublicKeyTypeAuthentication
 import org.dif.peerdid.createPeerDIDNumalgo2
 import org.dif.peerdid.isPeerDID
 import org.junit.jupiter.api.Test

@@ -1,4 +1,4 @@
-package org.dif.model
+package org.dif.peerdid.model
 
 data class PublicKey<T : PublicKeyType>(
     val encodingType: EncodingType,

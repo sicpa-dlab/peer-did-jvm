@@ -2,10 +2,10 @@
 
 package org.dif.peerdid
 
-import org.dif.model.JSON
-import org.dif.model.PeerDID
-import org.dif.model.PublicKeyAgreement
-import org.dif.model.PublicKeyAuthentication
+import org.dif.peerdid.model.JSON
+import org.dif.peerdid.model.PeerDID
+import org.dif.peerdid.model.PublicKeyAgreement
+import org.dif.peerdid.model.PublicKeyAuthentication
 
 /**
  * Checks if [peerDID] param matches PeerDID spec

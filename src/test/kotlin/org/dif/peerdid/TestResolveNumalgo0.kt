@@ -1,6 +1,5 @@
-
+package org.dif.peerdid
 import com.google.gson.GsonBuilder
-import org.dif.peerdid.resolvePeerDID
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 

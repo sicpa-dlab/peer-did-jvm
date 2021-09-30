@@ -1,4 +1,4 @@
-package org.dif.model
+package org.dif.peerdid.model
 
 interface PublicKeyType {
     fun prefix(): Int

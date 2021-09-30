@@ -2,8 +2,8 @@
 
 package org.dif.peerdid
 
-import org.dif.model.DIDDoc
-import org.dif.model.PeerDID
+import org.dif.peerdid.model.DIDDoc
+import org.dif.peerdid.model.PeerDID
 
 /** Resolves [DIDDoc] from [PeerDID]
  * @param [peerDID] PeerDID to resolve

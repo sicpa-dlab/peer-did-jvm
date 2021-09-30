@@ -10,13 +10,13 @@ import com.zman.varint.VarInt
 import io.ipfs.multibase.Base58
 import io.ipfs.multibase.Multibase
 import io.ipfs.multibase.binary.Base64
-import org.dif.model.EncodingType
-import org.dif.model.JSON
-import org.dif.model.PeerDID
-import org.dif.model.PublicKey
-import org.dif.model.PublicKeyType
-import org.dif.model.PublicKeyTypeAgreement
-import org.dif.model.PublicKeyTypeAuthentication
+import org.dif.peerdid.model.EncodingType
+import org.dif.peerdid.model.JSON
+import org.dif.peerdid.model.PeerDID
+import org.dif.peerdid.model.PublicKey
+import org.dif.peerdid.model.PublicKeyType
+import org.dif.peerdid.model.PublicKeyTypeAgreement
+import org.dif.peerdid.model.PublicKeyTypeAuthentication
 import java.nio.ByteBuffer
 import kotlin.collections.HashMap
 
