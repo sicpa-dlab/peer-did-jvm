@@ -2,6 +2,8 @@ plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm' version "${kotlinJvm}"
     id "org.jlleitschuh.gradle.ktlint" version "${ktlintGradle}"
+    // TODO: remove once published to Maven
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 group = 'org.dif.peerdid'
