@@ -1,6 +1,10 @@
 package org.dif.peerdid
 
-import org.dif.peerdid.core.*
+import org.dif.peerdid.core.EncodingType
+import org.dif.peerdid.core.PublicKeyAgreement
+import org.dif.peerdid.core.PublicKeyAuthentication
+import org.dif.peerdid.core.PublicKeyTypeAgreement
+import org.dif.peerdid.core.PublicKeyTypeAuthentication
 import org.junit.jupiter.api.Test
 
 class TestDemo {

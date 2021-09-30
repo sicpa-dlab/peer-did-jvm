@@ -2,9 +2,14 @@
 
 package org.dif.peerdid
 
-import org.dif.peerdid.core.*
+import org.dif.peerdid.core.JSON
+import org.dif.peerdid.core.Numalgo2Prefix
+import org.dif.peerdid.core.PeerDID
+import org.dif.peerdid.core.PublicKeyAgreement
+import org.dif.peerdid.core.PublicKeyAuthentication
 import org.dif.peerdid.core.checkKeyCorrectlyEncoded
 import org.dif.peerdid.core.createMultibaseEncnumbasis
+import org.dif.peerdid.core.encodeService
 
 /**
  * Checks if [peerDID] param matches PeerDID spec
@@ -16,9 +21,9 @@ import org.dif.peerdid.core.createMultibaseEncnumbasis
 fun isPeerDID(peerDID: String): Boolean {
     val regex =
         (
-                "^did:peer:(([0](z)([1-9a-km-zA-HJ-NP-Z]{46,47}))" +
-                        "|(2((.[AEVID](z)([1-9a-km-zA-HJ-NP-Z]{46,47}))+(.(S)[0-9a-zA-Z=]*)?)))$"
-                ).toRegex()
+            "^did:peer:(([0](z)([1-9a-km-zA-HJ-NP-Z]{46,47}))" +
+                "|(2((.[AEVID](z)([1-9a-km-zA-HJ-NP-Z]{46,47}))+(.(S)[0-9a-zA-Z=]*)?)))$"
+            ).toRegex()
     return regex.matches(peerDID)
 }
 
@@ -84,7 +89,7 @@ fun createPeerDIDNumalgo2(
 
     val encodedService = service?.let { if (service.isEmpty()) "" else encodeService(service) }
 
-    var peerdid = "did:peer:2${encryptionKeysStr}${signingKeysStr}"
+    var peerdid = "did:peer:2${encryptionKeysStr}$signingKeysStr"
     peerdid = encodedService?.let { peerdid.plus(encodedService) } ?: peerdid
     return peerdid
 }

@@ -12,7 +12,6 @@ import io.ipfs.multibase.Multibase
 import io.ipfs.multibase.binary.Base64
 import java.nio.ByteBuffer
 
-
 enum class Numalgo2Prefix(val prefix: Char) {
     AUTHENTICATION('V'),
     KEY_AGREEMENT('E'),
@@ -33,7 +32,6 @@ enum class MulticodecPrefix(val prefix: Int) {
             ED25519 -> PublicKeyTypeAuthentication.ED25519
         }
 
-
     companion object {
         fun fromPrefix(prefix: Int) =
             values().find { it.prefix == prefix }
@@ -44,7 +42,6 @@ enum class MulticodecPrefix(val prefix: Int) {
                 PublicKeyTypeAgreement.X25519 -> X25519
                 PublicKeyTypeAuthentication.ED25519 -> ED25519
             }
-
     }
 }
 
@@ -88,7 +85,6 @@ internal fun checkKeyCorrectlyEncoded(key: String, encodingType: EncodingType): 
     }
 }
 
-
 /**
  * Encodes [service] according to the second algorithm.
  * For this type of algorithm DIDDoc can be obtained from PeerDID
@@ -100,15 +96,15 @@ internal fun checkKeyCorrectlyEncoded(key: String, encodingType: EncodingType): 
 internal fun encodeService(service: JSON): String {
     if (!isJSONValid(service)) throw IllegalArgumentException("Service is not JSON")
     val serviceToEncode = (
-            service.replace(Regex("[\n\t\\s]*"), "")
-                .replace("type", "t")
-                .replace("serviceEndpoint", "s")
-                .replace("DIDCommMessaging", "dm")
-                .replace("routingKeys", "r")
-                .replace("accept", "a")
-            )
+        service.replace(Regex("[\n\t\\s]*"), "")
+            .replace("type", "t")
+            .replace("serviceEndpoint", "s")
+            .replace("DIDCommMessaging", "dm")
+            .replace("routingKeys", "r")
+            .replace("accept", "a")
+        )
     val encodedService = Base64.encodeBase64URLSafe(serviceToEncode.toByteArray()).decodeToString()
-    return ".${Numalgo2Prefix.SERVICE.prefix}${encodedService}"
+    return ".${Numalgo2Prefix.SERVICE.prefix}$encodedService"
 }
 
 /**
@@ -120,7 +116,7 @@ internal fun encodeService(service: JSON): String {
  * @return decoded service
  */
 internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Map<String, Any>>? {
-    if (encodedService.isNullOrEmpty())
+    if (encodedService.isEmpty())
         return null
     val decodedService = Base64.decodeBase64(encodedService).decodeToString()
 
@@ -135,7 +131,7 @@ internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Map<Str
     return serviceMapList.map { serviceMap ->
         val serviceType = serviceMap.remove("t").toString().replace("dm", "DIDCommMessaging")
         val service = mutableMapOf<String, Any>(
-            "id" to "${peerDID}#${serviceType.lowercase()}-${serviceNumber}",
+            "id" to "$peerDID#${serviceType.lowercase()}-$serviceNumber",
             "type" to serviceType
         )
         serviceMap.remove("s")?.let { service.put("serviceEndpoint", it) }
@@ -159,7 +155,6 @@ internal fun createMultibaseEncnumbasis(key: PublicKey<out PublicKeyType>): Stri
     val decodedKey = decodeKey(key)
     return toBase58Multibase(addPrefix(key.type, decodedKey))
 }
-
 
 /**
  * Decodes multibased encnumbasis to a verification material for DID DOC
@@ -213,10 +208,8 @@ internal fun decodeMultibaseEncnumbasis(multibase: String, format: DIDDocVerMate
 private fun getPublicKeyType(data: ByteArray) =
     extractPrefix(data).toPublicKey()
 
-
 private fun extractPrefix(data: ByteArray) =
     MulticodecPrefix.fromPrefix(VarInt.readVarint(ByteBuffer.wrap(data)))
-
 
 private fun removePrefix(data: ByteArray): List<Byte> {
     val prefix = extractPrefix(data)
@@ -232,7 +225,6 @@ private fun addPrefix(keyType: PublicKeyType, decodedKey: ByteArray): ByteArray 
     return byteBuffer.array().plus(decodedKey)
 }
 
-
 private fun decodeKey(key: PublicKey<out PublicKeyType>): ByteArray {
     try {
         when (key.encodingType) {
@@ -246,4 +238,3 @@ private fun decodeKey(key: PublicKey<out PublicKeyType>): ByteArray {
 private fun toBase58Multibase(value: ByteArray): String {
     return Multibase.encode(Multibase.Base.Base58BTC, value)
 }
-

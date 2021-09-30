@@ -1,6 +1,11 @@
 package org.dif.peerdid
 
-import org.dif.peerdid.core.*
+import org.dif.peerdid.core.DIDDocVerMaterialFormat
+import org.dif.peerdid.core.PublicKeyField
+import org.dif.peerdid.core.VerificationMaterial
+import org.dif.peerdid.core.VerificationMaterialTypeAgreement
+import org.dif.peerdid.core.VerificationMaterialTypeAuthentication
+import org.dif.peerdid.core.decodeMultibaseEncnumbasis
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
@@ -11,7 +16,6 @@ data class DecodeEncumbasisTestData(
     val format: DIDDocVerMaterialFormat,
     val expected: VerificationMaterial
 )
-
 
 class TestEncumbasisEncodeDecode {
 
@@ -99,6 +103,5 @@ class TestEncumbasisEncodeDecode {
             data.expected,
             decodeMultibaseEncnumbasis(data.inputMultibase, data.format)
         )
-
     }
 }

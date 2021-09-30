@@ -3,11 +3,11 @@ package org.dif.peerdid.core
 sealed class PublicKeyType
 
 sealed class PublicKeyTypeAgreement : PublicKeyType() {
-    object X25519: PublicKeyTypeAgreement()
+    object X25519 : PublicKeyTypeAgreement()
 }
 
 sealed class PublicKeyTypeAuthentication : PublicKeyType() {
-    object ED25519: PublicKeyTypeAuthentication()
+    object ED25519 : PublicKeyTypeAuthentication()
 }
 
 data class PublicKey<T : PublicKeyType>(

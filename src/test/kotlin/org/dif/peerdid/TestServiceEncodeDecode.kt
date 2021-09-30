@@ -5,7 +5,6 @@ import org.dif.peerdid.core.encodeService
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-
 class TestServiceEncodeDecode {
 
     @Test
@@ -121,5 +120,4 @@ class TestServiceEncodeDecode {
         )
         assertEquals(expected, service)
     }
-
 }

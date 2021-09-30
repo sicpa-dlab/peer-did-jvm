@@ -3,10 +3,16 @@
 package org.dif.peerdid
 
 import com.google.gson.GsonBuilder
-import org.dif.peerdid.core.*
+import org.dif.peerdid.core.DIDDoc
+import org.dif.peerdid.core.DIDDocVerMaterialFormat
+import org.dif.peerdid.core.Numalgo2Prefix
+import org.dif.peerdid.core.PeerDID
+import org.dif.peerdid.core.VerificationMaterialTypeAgreement
+import org.dif.peerdid.core.VerificationMaterialTypeAuthentication
+import org.dif.peerdid.core.VerificationMethod
 import org.dif.peerdid.core.decodeMultibaseEncnumbasis
+import org.dif.peerdid.core.decodeService
 import org.dif.peerdid.core.isInEncodingTypes
-
 
 /** Resolves [DIDDoc] from [PeerDID]
  * @param [peerDID] PeerDID to resolve
@@ -82,9 +88,9 @@ private fun buildDIDDocNumalgo2(peerDID: PeerDID, format: DIDDocVerMaterialForma
     val decodedService = decodeService(service, peerDID)
 
     return DIDDoc(
-        did=peerDID,
+        did = peerDID,
         authentication = authentications,
-        keyAgreement=keyAgreement,
+        keyAgreement = keyAgreement,
         service = decodedService
     )
 }

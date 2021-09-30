@@ -42,7 +42,6 @@ data class VerificationMaterial(
     val encnumbasis: String
 )
 
-
 enum class PublicKeyField(val value: String) {
     BASE58("publicKeyBase58"),
     MULTIBASE("publicKeyMultibase"),
@@ -81,4 +80,3 @@ data class JWK_OKP(
         )
     }
 }
-
