@@ -38,3 +38,12 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "${jvmTarget}"
 }
+
+
+shadowJar {
+    // @see https://youtrack.jetbrains.com/issue/KT-25709
+    exclude("**/*.kotlin_metadata")
+    exclude("**/*.kotlin_builtins")
+
+    archiveClassifier.set("") // remove suffix `-all` as intellij can't find the library otherwise
+}
