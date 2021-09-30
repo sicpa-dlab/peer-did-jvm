@@ -1,10 +1,6 @@
 package org.dif.peerdid
 
-import org.dif.peerdid.model.EncodingType
-import org.dif.peerdid.model.PublicKeyAgreement
-import org.dif.peerdid.model.PublicKeyAuthentication
-import org.dif.peerdid.model.PublicKeyTypeAgreement
-import org.dif.peerdid.model.PublicKeyTypeAuthentication
+import org.dif.peerdid.core.*
 import org.junit.jupiter.api.Test
 
 class TestDemo {
@@ -27,9 +23,10 @@ class TestDemo {
         val service =
             """
                 {
-                    "type": "didcommmessaging",
+                    "type": "DIDCommMessaging",
                     "serviceEndpoint": "https://example.com/endpoint1",
-                    "routingKeys": ["did:example:somemediator#somekey1"]
+                    "routingKeys": ["did:example:somemediator#somekey1"],
+                    "accept": ["didcomm/v2", "didcomm/aip2;env=rfc587"]
                 }
             """
 

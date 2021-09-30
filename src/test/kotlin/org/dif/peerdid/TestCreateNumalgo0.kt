@@ -1,12 +1,11 @@
 package org.dif.peerdid
 
-import org.dif.peerdid.model.EncodingType
-import org.dif.peerdid.model.PublicKeyAuthentication
-import org.dif.peerdid.model.PublicKeyTypeAuthentication
-import org.dif.peerdid.createPeerDIDNumalgo0
-import org.dif.peerdid.isPeerDID
+import org.dif.peerdid.core.EncodingType
+import org.dif.peerdid.core.PublicKeyAuthentication
+import org.dif.peerdid.core.PublicKeyTypeAuthentication
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertEquals
 
 class TestCreateNumalgo0 {
     @Test
@@ -20,8 +19,9 @@ class TestCreateNumalgo0 {
         )
 
         val peerDIDAlgo0 = createPeerDIDNumalgo0(signingKeys[0])
-        assert(
-            peerDIDAlgo0 == "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V"
+        assertEquals(
+            "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
+            peerDIDAlgo0
         )
         assert(isPeerDID(peerDIDAlgo0))
     }

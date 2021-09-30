@@ -2,27 +2,89 @@
 
 package org.dif.peerdid
 
-import org.dif.peerdid.model.DIDDoc
-import org.dif.peerdid.model.PeerDID
+import com.google.gson.GsonBuilder
+import org.dif.peerdid.core.*
+import org.dif.peerdid.core.decodeMultibaseEncnumbasis
+import org.dif.peerdid.core.isInEncodingTypes
+
 
 /** Resolves [DIDDoc] from [PeerDID]
  * @param [peerDID] PeerDID to resolve
- * @param [versionId] a specific version of a [DIDDoc].
- *  If value is default, version of [DIDDoc] will be latest.
- *  [versionId] is not used for now, as we support only static layer where [DIDDoc] never changes
+ * @param [format] The format of public keys in the DID DOC. Default format is multibase.
  * @throws IllegalArgumentException
  * - if [peerDID] parameter does not match [peerDID] spec
  * - if a valid DIDDoc cannot be produced from the [peerDID]
  * @return resolved [DIDDoc] as JSON string
  */
-fun resolvePeerDID(peerDID: PeerDID, versionId: Int? = null): DIDDoc {
+fun resolvePeerDID(peerDID: PeerDID, format: DIDDocVerMaterialFormat = DIDDocVerMaterialFormat.MULTIBASE): String {
     if (!isPeerDID(peerDID)) {
         throw IllegalArgumentException("Invalid Peer DID: $peerDID")
     }
-    if (peerDID[9] == '0') {
-        return buildDIDDocNumalgo0(peerDID)
+    val didDoc = if (peerDID[9] == '0') {
+        buildDIDDocNumalgo0(peerDID, format)
     } else if (peerDID[9] == '2') {
-        return buildDIDDocNumalgo2(peerDID)
+        buildDIDDocNumalgo2(peerDID, format)
+    } else {
+        throw IllegalArgumentException("Invalid numalgo of Peer DID: $peerDID")
     }
-    throw IllegalArgumentException("Invalid numalgo of Peer DID: $peerDID")
+
+    val gson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
+    return gson.toJson(didDoc.toDict())
+}
+
+private fun buildDIDDocNumalgo0(peerDID: PeerDID, format: DIDDocVerMaterialFormat): DIDDoc {
+    val inceptionKey = peerDID.substring(10)
+    val encodingAlgorithm = peerDID[10]
+
+    if (!isInEncodingTypes(encodingAlgorithm))
+        throw IllegalArgumentException("Unsupported encoding algorithm of key: $encodingAlgorithm")
+
+    val verificationMaterial = decodeMultibaseEncnumbasis(inceptionKey, format)
+
+    if (verificationMaterial.type !is VerificationMaterialTypeAuthentication)
+        throw IllegalArgumentException("Invalid type of key $inceptionKey. Key agreement instead of authentication.")
+
+    return DIDDoc(
+        did = peerDID,
+        authentication = listOf(
+            VerificationMethod(verificationMaterial, peerDID)
+        )
+    )
+}
+
+private fun buildDIDDocNumalgo2(peerDID: PeerDID, format: DIDDocVerMaterialFormat): DIDDoc {
+    val keys = peerDID.drop(11)
+
+    var service = ""
+    val authentications = mutableListOf<VerificationMethod>()
+    val keyAgreement = mutableListOf<VerificationMethod>()
+
+    keys.split(".").forEach {
+        val prefix = it[0]
+        val value = it.drop(1)
+        if (prefix == Numalgo2Prefix.SERVICE.prefix)
+            service = value
+        else if (prefix == Numalgo2Prefix.AUTHENTICATION.prefix) {
+            val verificationMaterial = decodeMultibaseEncnumbasis(value, format)
+            if (verificationMaterial.type !is VerificationMaterialTypeAuthentication)
+                throw IllegalArgumentException("Invalid type of key $value. Key agreement instead of authentication.")
+            authentications.add(VerificationMethod(verificationMaterial, peerDID))
+        } else if (prefix == Numalgo2Prefix.KEY_AGREEMENT.prefix) {
+            val verificationMaterial = decodeMultibaseEncnumbasis(value, format)
+            if (verificationMaterial.type !is VerificationMaterialTypeAgreement)
+                throw IllegalArgumentException("Invalid type of key $value. Authentication instead of key agreement.")
+            keyAgreement.add(VerificationMethod(verificationMaterial, peerDID))
+        } else {
+            throw IllegalArgumentException("Unsupported transform part of PeerDID: $prefix")
+        }
+    }
+
+    val decodedService = decodeService(service, peerDID)
+
+    return DIDDoc(
+        did=peerDID,
+        authentication = authentications,
+        keyAgreement=keyAgreement,
+        service = decodedService
+    )
 }
