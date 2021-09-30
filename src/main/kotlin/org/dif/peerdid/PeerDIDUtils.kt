@@ -47,7 +47,7 @@ internal fun buildDIDDocNumalgo0(peerDID: PeerDID): String {
     )
     val diddoc = mapOf(
         "id" to peerDID,
-        "authentication" to gson.toJsonTree(authentication)
+        "authentication" to listOf(gson.toJsonTree(authentication))
     )
 
     return gson.toJson(diddoc)
