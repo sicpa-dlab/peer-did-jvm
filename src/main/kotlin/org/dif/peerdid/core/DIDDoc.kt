@@ -2,7 +2,7 @@ package org.dif.peerdid.core
 
 import io.ipfs.multibase.binary.Base64
 
-data class DIDDoc(
+internal data class DIDDoc(
     val did: String,
     val authentication: List<VerificationMethod>,
     val keyAgreement: List<VerificationMethod> = emptyList(),
@@ -23,7 +23,7 @@ data class DIDDoc(
     }
 }
 
-data class VerificationMethod(
+internal data class VerificationMethod(
     val verMaterial: VerificationMaterial,
     val did: String
 ) {
@@ -35,34 +35,34 @@ data class VerificationMethod(
     )
 }
 
-data class VerificationMaterial(
+internal data class VerificationMaterial(
     val field: PublicKeyField,
     val type: VerificationMaterialType,
     val value: Any,
     val encnumbasis: String
 )
 
-enum class PublicKeyField(val value: String) {
+internal enum class PublicKeyField(val value: String) {
     BASE58("publicKeyBase58"),
     MULTIBASE("publicKeyMultibase"),
     JWK("publicKeyJwk");
 }
 
-sealed class VerificationMaterialType(val value: String)
+internal sealed class VerificationMaterialType(val value: String)
 
-sealed class VerificationMaterialTypeAgreement(value: String) : VerificationMaterialType(value) {
+internal sealed class VerificationMaterialTypeAgreement(value: String) : VerificationMaterialType(value) {
     object JSON_WEB_KEY_2020 : VerificationMaterialTypeAgreement("JsonWebKey2020")
     object X25519_KEY_AGREEMENT_KEY_2019 : VerificationMaterialTypeAgreement("X25519KeyAgreementKey2019")
     object X25519_KEY_AGREEMENT_KEY_2020 : VerificationMaterialTypeAgreement("X25519KeyAgreementKey2020")
 }
 
-sealed class VerificationMaterialTypeAuthentication(value: String) : VerificationMaterialType(value) {
+internal sealed class VerificationMaterialTypeAuthentication(value: String) : VerificationMaterialType(value) {
     object JSON_WEB_KEY_2020 : VerificationMaterialTypeAuthentication("JsonWebKey2020")
     object ED25519_VERIFICATION_KEY_2018 : VerificationMaterialTypeAuthentication("Ed25519VerificationKey2018")
     object ED25519_VERIFICATION_KEY_2020 : VerificationMaterialTypeAuthentication("Ed25519VerificationKey2020")
 }
 
-data class JWK_OKP(
+internal data class JWK_OKP(
     val verMaterialType: VerificationMaterialType,
     val value: ByteArray
 ) {

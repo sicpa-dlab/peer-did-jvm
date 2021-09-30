@@ -1,23 +1,17 @@
-package org.dif.peerdid
+package org.dif.peerdid.core
 
-import org.dif.peerdid.core.DIDDocVerMaterialFormat
-import org.dif.peerdid.core.PublicKeyField
-import org.dif.peerdid.core.VerificationMaterial
-import org.dif.peerdid.core.VerificationMaterialTypeAgreement
-import org.dif.peerdid.core.VerificationMaterialTypeAuthentication
-import org.dif.peerdid.core.decodeMultibaseEncnumbasis
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 import kotlin.test.assertEquals
 
-data class DecodeEncumbasisTestData(
+internal data class DecodeEncumbasisTestData(
     val inputMultibase: String,
     val format: DIDDocVerMaterialFormat,
     val expected: VerificationMaterial
 )
 
-class TestEncumbasisEncodeDecode {
+internal class TestEncumbasisEncodeDecode {
 
     companion object {
 

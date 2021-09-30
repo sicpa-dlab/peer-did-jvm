@@ -12,17 +12,17 @@ import io.ipfs.multibase.Multibase
 import io.ipfs.multibase.binary.Base64
 import java.nio.ByteBuffer
 
-enum class Numalgo2Prefix(val prefix: Char) {
+internal enum class Numalgo2Prefix(val prefix: Char) {
     AUTHENTICATION('V'),
     KEY_AGREEMENT('E'),
     SERVICE('S');
 }
 
-enum class MultibasePrefix(val prefix: Char) {
+internal enum class MultibasePrefix(val prefix: Char) {
     BASE58('z');
 }
 
-enum class MulticodecPrefix(val prefix: Int) {
+internal enum class MulticodecPrefix(val prefix: Int) {
     X25519(0xEC),
     ED25519(0xED);
 

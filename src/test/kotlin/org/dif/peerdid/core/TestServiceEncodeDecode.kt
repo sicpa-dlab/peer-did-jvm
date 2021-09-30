@@ -1,7 +1,6 @@
-package org.dif.peerdid
+package org.dif.peerdid.core
 
-import org.dif.peerdid.core.decodeService
-import org.dif.peerdid.core.encodeService
+import org.dif.peerdid.PEER_DID_NUMALGO_2
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
