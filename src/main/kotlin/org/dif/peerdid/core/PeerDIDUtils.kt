@@ -5,7 +5,7 @@ package org.dif.peerdid.core
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
-import com.google.gson.internal.LinkedTreeMap
+import com.google.gson.reflect.TypeToken
 import com.zman.varint.VarInt
 import io.ipfs.multibase.Base58
 import io.ipfs.multibase.Multibase
@@ -76,7 +76,7 @@ internal fun checkKeyCorrectlyEncoded(key: String, encodingType: EncodingType): 
         return false
     }
     val alphabet = Regex("[1-9a-km-zA-HJ-NP-Z]+")
-    val byteLengths = mutableListOf(32)
+    val byteLengths = listOf(32)
     return try {
         val b58len = Base58.decode(key).size
         alphabet.matches(key) && byteLengths.contains(b58len)
@@ -95,14 +95,14 @@ internal fun checkKeyCorrectlyEncoded(key: String, encodingType: EncodingType): 
  */
 internal fun encodeService(service: JSON): String {
     if (!isJSONValid(service)) throw IllegalArgumentException("Service is not JSON")
-    val serviceToEncode = (
-        service.replace(Regex("[\n\t\\s]*"), "")
-            .replace("type", "t")
-            .replace("serviceEndpoint", "s")
-            .replace("DIDCommMessaging", "dm")
-            .replace("routingKeys", "r")
-            .replace("accept", "a")
-        )
+
+    val serviceToEncode = service.replace(Regex("[\n\t\\s]*"), "")
+        .replace("type", "t")
+        .replace("serviceEndpoint", "s")
+        .replace("DIDCommMessaging", "dm")
+        .replace("routingKeys", "r")
+        .replace("accept", "a")
+
     val encodedService = Base64.encodeBase64URLSafe(serviceToEncode.toByteArray()).decodeToString()
     return ".${Numalgo2Prefix.SERVICE.prefix}$encodedService"
 }
@@ -122,13 +122,12 @@ internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Map<Str
 
     val gson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     val serviceMapList = try {
-        gson.fromJson(decodedService, List::class.java) as List<LinkedTreeMap<String, Any>>
+        gson.fromJson(decodedService, object : TypeToken<List<HashMap<String, Any>>>() {}.type)
     } catch (e: JsonSyntaxException) {
         listOf(gson.fromJson(decodedService, HashMap::class.java))
     }
 
-    var serviceNumber = 0
-    return serviceMapList.map { serviceMap ->
+    return serviceMapList.mapIndexed { serviceNumber, serviceMap ->
         val serviceType = serviceMap.remove("t").toString().replace("dm", "DIDCommMessaging")
         val service = mutableMapOf<String, Any>(
             "id" to "$peerDID#${serviceType.lowercase()}-$serviceNumber",
@@ -138,7 +137,6 @@ internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Map<Str
         serviceMap.remove("r")?.let { service.put("routingKeys", it) }
         serviceMap.remove("a")?.let { service.put("accept", it) }
 
-        serviceNumber++
         service
     }.toList()
 }

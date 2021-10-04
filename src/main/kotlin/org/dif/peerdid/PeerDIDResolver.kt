@@ -26,12 +26,10 @@ fun resolvePeerDID(peerDID: PeerDID, format: DIDDocVerMaterialFormat = DIDDocVer
     if (!isPeerDID(peerDID)) {
         throw IllegalArgumentException("Invalid Peer DID: $peerDID")
     }
-    val didDoc = if (peerDID[9] == '0') {
-        buildDIDDocNumalgo0(peerDID, format)
-    } else if (peerDID[9] == '2') {
-        buildDIDDocNumalgo2(peerDID, format)
-    } else {
-        throw IllegalArgumentException("Invalid numalgo of Peer DID: $peerDID")
+    val didDoc = when (peerDID[9]) {
+        '0' -> buildDIDDocNumalgo0(peerDID, format)
+        '2' -> buildDIDDocNumalgo2(peerDID, format)
+        else -> throw IllegalArgumentException("Invalid numalgo of Peer DID: $peerDID")
     }
 
     val gson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
@@ -68,20 +66,25 @@ private fun buildDIDDocNumalgo2(peerDID: PeerDID, format: DIDDocVerMaterialForma
     keys.split(".").forEach {
         val prefix = it[0]
         val value = it.drop(1)
-        if (prefix == Numalgo2Prefix.SERVICE.prefix)
-            service = value
-        else if (prefix == Numalgo2Prefix.AUTHENTICATION.prefix) {
-            val verificationMaterial = decodeMultibaseEncnumbasis(value, format)
-            if (verificationMaterial.type !is VerificationMaterialTypeAuthentication)
-                throw IllegalArgumentException("Invalid type of key $value. Key agreement instead of authentication.")
-            authentications.add(VerificationMethod(verificationMaterial, peerDID))
-        } else if (prefix == Numalgo2Prefix.KEY_AGREEMENT.prefix) {
-            val verificationMaterial = decodeMultibaseEncnumbasis(value, format)
-            if (verificationMaterial.type !is VerificationMaterialTypeAgreement)
-                throw IllegalArgumentException("Invalid type of key $value. Authentication instead of key agreement.")
-            keyAgreement.add(VerificationMethod(verificationMaterial, peerDID))
-        } else {
-            throw IllegalArgumentException("Unsupported transform part of PeerDID: $prefix")
+
+        when (prefix) {
+            Numalgo2Prefix.SERVICE.prefix -> service = value
+
+            Numalgo2Prefix.AUTHENTICATION.prefix -> {
+                val verificationMaterial = decodeMultibaseEncnumbasis(value, format)
+                if (verificationMaterial.type !is VerificationMaterialTypeAuthentication)
+                    throw IllegalArgumentException("Invalid type of key $value. Key agreement instead of authentication.")
+                authentications.add(VerificationMethod(verificationMaterial, peerDID))
+            }
+
+            Numalgo2Prefix.KEY_AGREEMENT.prefix -> {
+                val verificationMaterial = decodeMultibaseEncnumbasis(value, format)
+                if (verificationMaterial.type !is VerificationMaterialTypeAgreement)
+                    throw IllegalArgumentException("Invalid type of key $value. Authentication instead of key agreement.")
+                keyAgreement.add(VerificationMethod(verificationMaterial, peerDID))
+            }
+
+            else -> throw IllegalArgumentException("Unsupported transform part of PeerDID: $prefix")
         }
     }
 

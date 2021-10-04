@@ -87,9 +87,7 @@ fun createPeerDIDNumalgo2(
             ".${Numalgo2Prefix.AUTHENTICATION.prefix}"
         )
 
-    val encodedService = service?.let { if (service.isEmpty()) "" else encodeService(service) }
+    val encodedService = if (service.isNullOrEmpty()) "" else encodeService(service)
 
-    var peerdid = "did:peer:2${encryptionKeysStr}$signingKeysStr"
-    peerdid = encodedService?.let { peerdid.plus(encodedService) } ?: peerdid
-    return peerdid
+    return "did:peer:2$encryptionKeysStr$signingKeysStr$encodedService"
 }
