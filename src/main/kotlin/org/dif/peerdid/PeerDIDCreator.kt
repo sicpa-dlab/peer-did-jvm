@@ -2,10 +2,14 @@
 
 package org.dif.peerdid
 
-import org.dif.model.JSON
-import org.dif.model.PeerDID
-import org.dif.model.PublicKeyAgreement
-import org.dif.model.PublicKeyAuthentication
+import org.dif.peerdid.core.JSON
+import org.dif.peerdid.core.Numalgo2Prefix
+import org.dif.peerdid.core.PeerDID
+import org.dif.peerdid.core.PublicKeyAgreement
+import org.dif.peerdid.core.PublicKeyAuthentication
+import org.dif.peerdid.core.checkKeyCorrectlyEncoded
+import org.dif.peerdid.core.createMultibaseEncnumbasis
+import org.dif.peerdid.core.encodeService
 
 /**
  * Checks if [peerDID] param matches PeerDID spec
@@ -35,7 +39,7 @@ fun isPeerDID(peerDID: String): Boolean {
 fun createPeerDIDNumalgo0(inceptionKey: PublicKeyAuthentication): PeerDID {
     if (!checkKeyCorrectlyEncoded(inceptionKey.encodedValue, inceptionKey.encodingType))
         throw IllegalArgumentException("Inception key $inceptionKey is not correctly encoded")
-    return "did:peer:0".plus(createEncnumbasis(inceptionKey))
+    return "did:peer:0${createMultibaseEncnumbasis(inceptionKey)}"
 }
 
 /**
@@ -54,22 +58,38 @@ fun createPeerDIDNumalgo0(inceptionKey: PublicKeyAuthentication): PeerDID {
 fun createPeerDIDNumalgo2(
     encryptionKeys: List<PublicKeyAgreement>,
     signingKeys: List<PublicKeyAuthentication>,
-    service: JSON
+    service: JSON?
 ): PeerDID {
     val encodedEncryptionKeys = encryptionKeys.map { publicKey ->
         if (!checkKeyCorrectlyEncoded(publicKey.encodedValue, publicKey.encodingType))
             throw IllegalArgumentException("Encryption key $publicKey is not correctly encoded")
-        createEncnumbasis(publicKey)
+        createMultibaseEncnumbasis(publicKey)
     }
     val encodedSigningKeys = signingKeys.map { publicKey ->
         if (!checkKeyCorrectlyEncoded(publicKey.encodedValue, publicKey.encodingType))
             throw IllegalArgumentException("Signing key $publicKey is not correctly encoded")
-        createEncnumbasis(publicKey)
+        createMultibaseEncnumbasis(publicKey)
     }
-    val encryptionKeysStr = if (encryptionKeys.isEmpty()) "" else encodedEncryptionKeys.joinToString(".E", ".E")
-    val signingKeysStr = if (signingKeys.isEmpty()) "" else encodedSigningKeys.joinToString(".V", ".V")
-    val encodedService = if (service.isEmpty()) "" else encodeService(service)
 
-    val peerdid = "did:peer:2".plus(encryptionKeysStr).plus(signingKeysStr).plus(encodedService)
+    val encryptionKeysStr = if (encryptionKeys.isEmpty())
+        ""
+    else
+        encodedEncryptionKeys.joinToString(
+            ".${Numalgo2Prefix.KEY_AGREEMENT.prefix}",
+            ".${Numalgo2Prefix.KEY_AGREEMENT.prefix}"
+        )
+
+    val signingKeysStr = if (signingKeys.isEmpty())
+        ""
+    else
+        encodedSigningKeys.joinToString(
+            ".${Numalgo2Prefix.AUTHENTICATION.prefix}",
+            ".${Numalgo2Prefix.AUTHENTICATION.prefix}"
+        )
+
+    val encodedService = service?.let { if (service.isEmpty()) "" else encodeService(service) }
+
+    var peerdid = "did:peer:2${encryptionKeysStr}$signingKeysStr"
+    peerdid = encodedService?.let { peerdid.plus(encodedService) } ?: peerdid
     return peerdid
 }

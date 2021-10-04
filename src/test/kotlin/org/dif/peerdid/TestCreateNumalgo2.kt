@@ -1,12 +1,13 @@
-import org.dif.model.EncodingType
-import org.dif.model.PublicKeyAgreement
-import org.dif.model.PublicKeyAuthentication
-import org.dif.model.PublicKeyTypeAgreement
-import org.dif.model.PublicKeyTypeAuthentication
-import org.dif.peerdid.createPeerDIDNumalgo2
-import org.dif.peerdid.isPeerDID
+package org.dif.peerdid
+
+import org.dif.peerdid.core.EncodingType
+import org.dif.peerdid.core.PublicKeyAgreement
+import org.dif.peerdid.core.PublicKeyAuthentication
+import org.dif.peerdid.core.PublicKeyTypeAgreement
+import org.dif.peerdid.core.PublicKeyTypeAuthentication
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertEquals
 
 class TestCreateNumalgo2 {
     val VALID_X25519_KEY = PublicKeyAgreement(
@@ -24,26 +25,12 @@ class TestCreateNumalgo2 {
     )
 
     val VALID_SERVICE =
-        """[
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
-        },
-        {
-            "type": "didcommmessaging",
-            "serviceEndpoint": "https://example.com/endpoint2",
-            "routingKeys": ["did:example:somemediator#somekey2"]
-        }
-        ]
-        """
-
-    val VALID_SERVICE_NOT_ARRAY =
         """
         {
-            "type": "didcommmessaging",
+            "type": "DIDCommMessaging",
             "serviceEndpoint": "https://example.com/endpoint",
-            "routingKeys": ["did:example:somemediator#somekey"]
+            "routingKeys": ["did:example:somemediator#somekey"],
+            "accept": ["didcomm/v2", "didcomm/aip2;env=rfc587"]
         }
         """
 
@@ -55,19 +42,31 @@ class TestCreateNumalgo2 {
         val signingKeys = listOf(
             VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
-        val service = VALID_SERVICE
+        val service = """[
+            {
+                "type": "DIDCommMessaging",
+                "serviceEndpoint": "https://example.com/endpoint",
+                "routingKeys": ["did:example:somemediator#somekey"]
+            },
+            {
+                "type": "example",
+                "serviceEndpoint": "https://example.com/endpoint2",
+                "routingKeys": ["did:example:somemediator#somekey2"],
+                "accept": ["didcomm/v2", "didcomm/aip2;env=rfc587"]
+            }
+            ]
+            """
 
         val peerDIDAlgo2 = createPeerDIDNumalgo2(
             encryptionKeys = encryptionKeys, signingKeys = signingKeys,
             service = service
         )
-        assert(
-            peerDIDAlgo2 == "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc" +
+        assertEquals(
+            "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc" +
                 ".Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
                 ".Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg" +
-                ".SW3sidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9pbnQiLCJyIjpbImRpZDpleGFtcGxlO" +
-                "nNvbWVtZWRpYXRvciNzb21la2V5Il19LHsidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9p" +
-                "bnQyIiwiciI6WyJkaWQ6ZXhhbXBsZTpzb21lbWVkaWF0b3Ijc29tZWtleTIiXX1d"
+                ".SW3sidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9pbnQiLCJyIjpbImRpZDpleGFtcGxlOnNvbWVtZWRpYXRvciNzb21la2V5Il19LHsidCI6ImV4YW1wbGUiLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludDIiLCJyIjpbImRpZDpleGFtcGxlOnNvbWVtZWRpYXRvciNzb21la2V5MiJdLCJhIjpbImRpZGNvbW0vdjIiLCJkaWRjb21tL2FpcDI7ZW52PXJmYzU4NyJdfV0",
+            peerDIDAlgo2
         )
         assert(isPeerDID(peerDIDAlgo2))
     }
@@ -80,7 +79,38 @@ class TestCreateNumalgo2 {
         val signingKeys = listOf(
             VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
-        val service = VALID_SERVICE_NOT_ARRAY
+        val service =
+            """
+            {
+                "type": "DIDCommMessaging",
+                "serviceEndpoint": "https://example.com/endpoint",
+                "routingKeys": ["did:example:somemediator#somekey"]
+            }
+            """
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+            service = service
+        )
+
+        assert(isPeerDID(peerDIDAlgo2))
+    }
+
+    @Test
+    fun testCreateNumalgo2PositiveServiceMinimalFields() {
+        val encryptionKeys = listOf(
+            VALID_X25519_KEY
+        )
+        val signingKeys = listOf(
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
+        )
+        val service =
+            """
+            {
+                "type": "DIDCommMessaging",
+                "serviceEndpoint": "https://example.com/endpoint"
+            }
+            """
 
         val peerDIDAlgo2 = createPeerDIDNumalgo2(
             encryptionKeys = encryptionKeys, signingKeys = signingKeys,
@@ -101,7 +131,7 @@ class TestCreateNumalgo2 {
         val service = """
         [
             {
-                "type": "didcommmessaging",
+                "type": "DIDCommMessaging",
                 "serviceEndpoint": "https://example.com/endpoint",
                 "routingKeys": ["did:example:somemediator#somekey"]
             }       
@@ -117,6 +147,30 @@ class TestCreateNumalgo2 {
     }
 
     @Test
+    fun testCreateNumalgo2PositiveServiceIsNull() {
+        val encryptionKeys = listOf(
+            VALID_X25519_KEY
+        )
+        val signingKeys = listOf(
+            VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
+        )
+        val service = null
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+            service = service
+        )
+
+        assertEquals(
+            "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc" +
+                ".Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
+                ".Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg",
+            peerDIDAlgo2
+        )
+        assert(isPeerDID(peerDIDAlgo2))
+    }
+
+    @Test
     fun testCreateNumalgo2WithoutEncryptionKeys() {
         val encryptionKeys = listOf<PublicKeyAgreement>()
         val signingKeys = listOf(
@@ -128,13 +182,12 @@ class TestCreateNumalgo2 {
             encryptionKeys = encryptionKeys, signingKeys = signingKeys,
             service = service
         )
-        assert(
-            peerDIDAlgo2 == "did:peer:2" +
+        assertEquals(
+            "did:peer:2" +
                 ".Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
                 ".Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg" +
-                ".SW3sidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9pbnQiLCJyIjpbImRpZDpleGFtcGxlO" +
-                "nNvbWVtZWRpYXRvciNzb21la2V5Il19LHsidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9p" +
-                "bnQyIiwiciI6WyJkaWQ6ZXhhbXBsZTpzb21lbWVkaWF0b3Ijc29tZWtleTIiXX1d"
+                ".SeyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludCIsInIiOlsiZGlkOmV4YW1wbGU6c29tZW1lZGlhdG9yI3NvbWVrZXkiXSwiYSI6WyJkaWRjb21tL3YyIiwiZGlkY29tbS9haXAyO2Vudj1yZmM1ODciXX0",
+            peerDIDAlgo2
         )
         assert(isPeerDID(peerDIDAlgo2))
     }
@@ -151,11 +204,10 @@ class TestCreateNumalgo2 {
             encryptionKeys = encryptionKeys, signingKeys = signingKeys,
             service = service
         )
-        assert(
-            peerDIDAlgo2 == "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc" +
-                ".SW3sidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9pbnQiLCJyIjpbImRpZDpleGFtcGxlO" +
-                "nNvbWVtZWRpYXRvciNzb21la2V5Il19LHsidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9p" +
-                "bnQyIiwiciI6WyJkaWQ6ZXhhbXBsZTpzb21lbWVkaWF0b3Ijc29tZWtleTIiXX1d"
+        assertEquals(
+            "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc" +
+                ".SeyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludCIsInIiOlsiZGlkOmV4YW1wbGU6c29tZW1lZGlhdG9yI3NvbWVrZXkiXSwiYSI6WyJkaWRjb21tL3YyIiwiZGlkY29tbS9haXAyO2Vudj1yZmM1ODciXX0",
+            peerDIDAlgo2
         )
         assert(isPeerDID(peerDIDAlgo2))
     }
@@ -257,7 +309,7 @@ class TestCreateNumalgo2 {
             VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
         val service = """{
-        "type": "didcommmessaging",
+        "type": "DIDCommMessaging",
         "serviceEndpoint": "https://example.com/endpoint",
         "routingKeys": ["did:example:somemediator#somekey"],
         "example1": "myExample1",

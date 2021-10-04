@@ -1,31 +1,34 @@
+package org.dif.peerdid
 
-import com.google.gson.GsonBuilder
-import org.dif.peerdid.resolvePeerDID
+import org.dif.peerdid.core.DIDDocVerMaterialFormat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertEquals
 
 class TestResolveNumalgo0 {
-    val GSON = GsonBuilder().create()
 
     @Test
-    fun testResolvePositive() {
-        val expectedValue = GSON.fromJson(
-            """{
-            "id": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
-            "authentication": {
-                "id": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V#6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
-                "type": "ED25519",
-                "controller": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
-                "publicKeyBase58": "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7"
-            }
-        }""",
-            Map::class.java
-        )
-        val realValue = GSON.fromJson(
-            resolvePeerDID("did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V"),
-            Map::class.java
-        )
-        assert(realValue.equals(expectedValue))
+    fun testResolvePositiveDefault() {
+        val realValue = resolvePeerDID(PEER_DID_NUMALGO_0)
+        assertEquals(fromJson(DID_DOC_NUMALGO_O_MULTIBASE), fromJson(realValue))
+    }
+
+    @Test
+    fun testResolvePositiveBase58() {
+        val realValue = resolvePeerDID(PEER_DID_NUMALGO_0, DIDDocVerMaterialFormat.BASE58)
+        assertEquals(fromJson(DID_DOC_NUMALGO_O_BASE58), fromJson(realValue))
+    }
+
+    @Test
+    fun testResolvePositiveMultibase() {
+        val realValue = resolvePeerDID(PEER_DID_NUMALGO_0, DIDDocVerMaterialFormat.MULTIBASE)
+        assertEquals(fromJson(DID_DOC_NUMALGO_O_MULTIBASE), fromJson(realValue))
+    }
+
+    @Test
+    fun testResolvePositiveJWK() {
+        val realValue = resolvePeerDID(PEER_DID_NUMALGO_0, DIDDocVerMaterialFormat.JWK)
+        assertEquals(fromJson(DID_DOC_NUMALGO_O_JWK), fromJson(realValue))
     }
 
     @Test
