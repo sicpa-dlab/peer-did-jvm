@@ -1,0 +1,61 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    id "de.mannodermaus.android-junit5"  // jUnit5 for android
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        minSdk 24
+        targetSdk 31
+
+        // TODO set that properly
+        //versionCode 1
+        //versionName "1.0"
+
+        // jUnit5 for android instrumented tests
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArgument "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
+    }
+
+    sourceSets {
+        // build main instead of usage via dependencies due to
+        // "internal" visibility of some classes
+        main.kotlin.srcDirs += '../lib/src/main/kotlin'
+        androidTest.kotlin.srcDirs += "../lib/src/test/kotlin"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation "com.google.code.gson:gson:${googleGson}"
+    // https://mvnrepository.com/artifact/com.github.multiformats/java-multibase
+    implementation "com.github.multiformats:java-multibase:${javaMultibase}"
+    implementation "com.zmannotes:varint:${zmanVarint}"
+
+    // test dependencies
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-test"
+
+    // jUnit5 support
+    // Jupiter API & Test Runner
+    androidTestImplementation "androidx.test:runner:${androidxTestRunner}"
+    androidTestImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitJupiter}"
+    androidTestImplementation "org.junit.jupiter:junit-jupiter-params:${jUnitJupiter}"
+    //androidTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitJupiter}"
+    // The instrumentation test companion libraries
+    androidTestImplementation "de.mannodermaus.junit5:android-test-core:${mannodermausJUunit5AndroidTest}"
+    androidTestRuntimeOnly "de.mannodermaus.junit5:android-test-runner:${mannodermausJUunit5AndroidTest}"
+}

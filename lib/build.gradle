@@ -1,0 +1,162 @@
+plugins {
+    id "java-library"
+    id "org.jetbrains.kotlin.jvm"
+    id "org.jlleitschuh.gradle.ktlint" version "${ktlintGradle}"
+    // TODO: remove once published to Maven
+    id "com.github.johnrengelman.shadow" version "${johnrengelmanShadow}"
+
+    // JMH benchmarks
+    // id "me.champeau.jmh" version "0.6.6"
+
+    // publishing
+    id "maven-publish"
+    id "signing"
+}
+
+group = "org.didcommx.peerdid"
+version = "${version}"
+project.ext.artifactId = rootProject.name
+archivesBaseName = project.artifactId
+
+kotlin {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation "com.google.code.gson:gson:${googleGson}"
+    // https://mvnrepository.com/artifact/com.github.multiformats/java-multibase
+    implementation "com.github.multiformats:java-multibase:${javaMultibase}"
+    implementation "com.zmannotes:varint:${zmanVarint}"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:${jUnitJupiter}"
+}
+
+task group {
+    doLast {
+        println(project.group)
+    }
+}
+
+task artifactId {
+    doLast {
+        println(project.artifactId)
+    }
+}
+
+task version {
+    doLast {
+        println(version)
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "${jvmTarget}"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "${jvmTarget}"
+}
+
+// TODO: remove once published to Maven
+shadowJar {
+    // @see https://youtrack.jetbrains.com/issue/KT-25709
+    exclude("**/*.kotlin_metadata")
+    exclude("**/*.kotlin_builtins")
+
+    archiveClassifier.set("") // remove suffix `-all` as intellij can"t find the library otherwise
+}
+
+// benchmarks
+// jmh {
+//     benchmarkMode = ["thrpt", "avgt"]
+//     warmupIterations = 0
+//     operationsPerInvocation = 1
+//     timeUnit = "ms"
+//     iterations = 1
+//     fork = 1
+//     includeTests = true
+// }
+
+
+// publishing
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = project.artifactId
+            from components.java
+
+            pom {
+                name = "Peer DID"
+                description = "Java/Kotlin Peer DID protocol implementation"
+                url = "https://github.com/sicpa-dlab/peer-did-jvm"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    // TODO
+                    developer {
+                        id = ""
+                        name = ""
+                        email = ""
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://sicpa-dlab/peer-did-jvm.git"
+                    developerConnection = "scm:git:ssh://sicpa-dlab/peer-did-jvm.git"
+                    url = "https://github.com/sicpa-dlab/peer-did-jvm"
+                }
+            }
+
+        }
+    }
+
+    // ORG_GRADLE_PROJECT_mavenOSSRHUsername=<jira-id>
+    // ORG_GRADLE_PROJECT_mavenOSSRHPassword=<jira-password>
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+
+            name = "mavenOSSRH"
+            credentials(PasswordCredentials)
+            url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+signing {
+    // ORG_GRADLE_PROJECT_signingKeyId=<gpg-signingKeyId>
+    // ORG_GRADLE_PROJECT_signingKey=<gpg-signingKey>
+    // ORG_GRADLE_PROJECT_signingPassword=<gpg-signingPassword>
+    def signingKeyId = findProperty("signingKeyId")
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+
+    // TODO test signing
+    sign publishing.publications.maven
+}
+
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption("html5", true)
+    }
+}

@@ -1,2 +1,21 @@
-rootProject.name = 'peer-did'
+rootProject.name = 'peerdid'
 
+include ':lib'
+
+def androidBuilds = this.properties['androidBuilds'] ?: false
+
+// NOTE android libraries require jdk >= 11
+if (androidBuilds) {
+  include ':android-test'
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url 'https://maven.scijava.org/content/groups/public'
+        }
+    }
+}
