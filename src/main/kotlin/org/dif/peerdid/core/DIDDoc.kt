@@ -14,10 +14,10 @@ internal data class DIDDoc(
             "authentication" to authentication.map { it.toDict() },
         )
         if (keyAgreement.isNotEmpty()) {
-            res.put("keyAgreement", keyAgreement.map { it.toDict() })
+            res["keyAgreement"] = keyAgreement.map { it.toDict() }
         }
         service?.let {
-            res.put("service", service)
+            res["service"] = service
         }
         return res
     }
@@ -62,9 +62,9 @@ internal sealed class VerificationMaterialTypeAuthentication(value: String) : Ve
     object ED25519_VERIFICATION_KEY_2020 : VerificationMaterialTypeAuthentication("Ed25519VerificationKey2020")
 }
 
-internal data class JWK_OKP(
-    val verMaterialType: VerificationMaterialType,
-    val value: ByteArray
+internal class JWK_OKP(
+    private val verMaterialType: VerificationMaterialType,
+    private val value: ByteArray
 ) {
     fun toDict(): Map<String, Any> {
         val x = Base64.encodeBase64URLSafe(value).decodeToString()
