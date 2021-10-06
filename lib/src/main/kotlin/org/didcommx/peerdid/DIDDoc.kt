@@ -1,6 +1,8 @@
 package org.didcommx.peerdid
 
-import com.google.gson.GsonBuilder
+import com.google.gson.*
+import org.didcommx.peerdid.core.didDocFromJson
+import java.lang.reflect.Type
 
 
 data class DIDDocPeerDID(
@@ -12,8 +14,29 @@ data class DIDDocPeerDID(
 
     companion object {
 
-        fun fromJson() {
+        fun fromJson(value: JSON): DIDDocPeerDID {
+            val deserializer = object : JsonDeserializer<DIDDocPeerDID> {
 
+                override fun deserialize(
+                    json: JsonElement?,
+                    typeOfT: Type?,
+                    context: JsonDeserializationContext?
+                ): DIDDocPeerDID {
+                    val jsonObject = json?.asJsonObject
+                        ?: throw IllegalArgumentException("Invalid JSON")
+                    return didDocFromJson(jsonObject)
+                }
+
+            }
+
+            try {
+                return GsonBuilder()
+                    .registerTypeAdapter(DIDDocPeerDID::class.java, deserializer)
+                    .create()
+                    .fromJson(value, DIDDocPeerDID::class.java)
+            } catch (e: Exception) {
+                throw MalformedPeerDIDDOcException(e)
+            }
         }
     }
 
@@ -53,10 +76,6 @@ data class VerificationMethodPeerDID(
             VerificationMaterialFormatPeerDID.JWK -> PublicKeyField.JWK
             VerificationMaterialFormatPeerDID.MULTIBASE -> PublicKeyField.MULTIBASE
         }
-
-//    private fun publicKeyField() =
-//        if (verMaterial.format == VerificationMaterialFormatPeerDID.JWK)
-//
 
     fun toDict() = mapOf(
         "id" to id,

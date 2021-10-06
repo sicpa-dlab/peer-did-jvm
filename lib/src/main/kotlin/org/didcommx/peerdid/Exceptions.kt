@@ -23,5 +23,5 @@ class MalformedPeerDIDException(message: String, cause: Throwable? = null)
  * @param message - the detail message.
  * @param cause - the cause of this.
  */
-class MalformedPeerDIDDOcException(message: String, cause: Throwable? = null)
-    : PeerDIDException("Invalid peer DID provided. $message", cause)
+class MalformedPeerDIDDOcException(cause: Throwable? = null)
+    : PeerDIDException("Invalid peer DID Doc", cause)
