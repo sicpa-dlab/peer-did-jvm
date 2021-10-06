@@ -1,6 +1,5 @@
 package org.didcommx.peerdid
 
-import org.didcommx.peerdid.core.DIDDocVerMaterialFormat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -15,19 +14,19 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolvePositiveBase58() {
-        val realValue = resolvePeerDID(PEER_DID_NUMALGO_2, DIDDocVerMaterialFormat.BASE58)
+        val realValue = resolvePeerDID(PEER_DID_NUMALGO_2, VerificationMaterialFormatPeerDID.BASE58)
         assertEquals(fromJson(DID_DOC_NUMALGO_2_BASE58), fromJson(realValue))
     }
 
     @Test
     fun testResolvePositiveMultibase() {
-        val realValue = resolvePeerDID(PEER_DID_NUMALGO_2, DIDDocVerMaterialFormat.MULTIBASE)
+        val realValue = resolvePeerDID(PEER_DID_NUMALGO_2, VerificationMaterialFormatPeerDID.MULTIBASE)
         assertEquals(fromJson(DID_DOC_NUMALGO_2_MULTIBASE), fromJson(realValue))
     }
 
     @Test
     fun testResolvePositiveJWK() {
-        val realValue = resolvePeerDID(PEER_DID_NUMALGO_2, DIDDocVerMaterialFormat.JWK)
+        val realValue = resolvePeerDID(PEER_DID_NUMALGO_2, VerificationMaterialFormatPeerDID.JWK)
         assertEquals(fromJson(DID_DOC_NUMALGO_2_JWK), fromJson(realValue))
     }
 
@@ -45,7 +44,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveUnsupportedNumalgoCode() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:1.Ez6LSpSrLxbAhg2SHwKk7kwpsH7DM7QjFS5iK6qP87eViohud" +
                     ".Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
@@ -56,7 +55,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveSigningMalformedBase58Encoding() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:2.Ez6LSpSrLxbAhg2SHwKk7kwpsH7DM7QjFS5iK6qP87eViohud" +
                     ".Vz6MkqRYqQi0gvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
@@ -67,7 +66,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveEncryptionMalformedBase58Encoding() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:2.Ez6LSpSrLxbAh02SHwKk7kwpsH7DM7QjFS5iK6qP87eViohud" +
                     ".Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
@@ -78,7 +77,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveUnsupportedTransformCode() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:2.Ea6LSpSrLxbAhg2SHwKk7kwpsH7DM7QjFS5iK6qP87eViohud" +
                     ".Va6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
@@ -89,7 +88,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveMalformedSigningMulticodecEncoding() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:2.Ez6LSpSrLxbAhg2SHwKk7kwpsH7DM7QjFS5iK6qP87eViohud" +
                     ".Vz6666kqYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
@@ -100,7 +99,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveMalformedEncryptionMulticodecEncoding() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:2.Ez6666SrLxbAhg2SHwKk7kwpsH7DM7QjFS5iK6qP87eViohud" +
                     ".Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
@@ -111,7 +110,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveInvalidVerificationKeyType() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:2.Vz6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc" +
                     ".Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
@@ -122,7 +121,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveInvalidEncryptionKeyType() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc" +
                     ".Ez6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
@@ -133,7 +132,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveMalformedServiceEncoding() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:2.Ez6LSpSrLxbAhg2SHwKk7kwpsH7DM7QjFS5iK6qP87eViohud" +
                     ".Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
@@ -144,7 +143,7 @@ class TestResolveNumalgo2 {
 
     @Test
     fun testResolveInvalidPrefix() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
                 "did:peer:2" +
                     ".Cz6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc" +

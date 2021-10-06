@@ -1,27 +1,22 @@
 package org.didcommx.peerdid
 
-import org.didcommx.peerdid.core.EncodingType
-import org.didcommx.peerdid.core.PublicKeyAgreement
-import org.didcommx.peerdid.core.PublicKeyAuthentication
-import org.didcommx.peerdid.core.PublicKeyTypeAgreement
-import org.didcommx.peerdid.core.PublicKeyTypeAuthentication
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class TestCreateNumalgo2 {
-    val VALID_X25519_KEY = PublicKeyAgreement(
-        encodedValue = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
-        type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
+    val VALID_X25519_KEY = VerificationMaterialAgreement(
+        value = "JhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
+        type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019, format = VerificationMaterialFormatPeerDID.BASE58
     )
 
-    val VALID_ED25519_KEY_1 = PublicKeyAuthentication(
-        encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-        type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+    val VALID_ED25519_KEY_1 = VerificationMaterialAuthentication(
+        value = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+        type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
     )
-    val VALID_ED25519_KEY_2 = PublicKeyAuthentication(
-        encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-        type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+    val VALID_ED25519_KEY_2 = VerificationMaterialAuthentication(
+        value = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
+        type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
     )
 
     val VALID_SERVICE =
@@ -172,7 +167,7 @@ class TestCreateNumalgo2 {
 
     @Test
     fun testCreateNumalgo2WithoutEncryptionKeys() {
-        val encryptionKeys = listOf<PublicKeyAgreement>()
+        val encryptionKeys = listOf<VerificationMaterialAgreement>()
         val signingKeys = listOf(
             VALID_ED25519_KEY_1, VALID_ED25519_KEY_2
         )
@@ -197,7 +192,7 @@ class TestCreateNumalgo2 {
         val encryptionKeys = listOf(
             VALID_X25519_KEY
         )
-        val signingKeys = listOf<PublicKeyAuthentication>()
+        val signingKeys = listOf<VerificationMaterialAuthentication>()
         val service = VALID_SERVICE
 
         val peerDIDAlgo2 = createPeerDIDNumalgo2(
@@ -215,9 +210,9 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2WrongEncryptionKey() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "...",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAgreement(
+                value = "...",
+                type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val signingKeys = listOf(
@@ -239,13 +234,13 @@ class TestCreateNumalgo2 {
             VALID_X25519_KEY
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "....",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAuthentication(
+                value = "....",
+                type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
             ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAuthentication(
+                value = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
+                type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val service = VALID_SERVICE
@@ -279,9 +274,9 @@ class TestCreateNumalgo2 {
     fun testCreateNumalgo2EncryptionKeysAndSigningAreMoreThan1ElementArray() {
         val encryptionKeys = listOf(
             VALID_X25519_KEY,
-            PublicKeyAgreement(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAgreement(
+                value = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+                type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val signingKeys = listOf(
@@ -300,9 +295,9 @@ class TestCreateNumalgo2 {
     fun testCreateNumalgo2ServiceHasMoreFieldsThanInConversionTable() {
         val encryptionKeys = listOf(
             VALID_X25519_KEY,
-            PublicKeyAgreement(
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAgreement(
+                value = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+                type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val signingKeys = listOf(
@@ -369,9 +364,9 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2MalformedEncryptionKeyNotBase58Encoded() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVLMYcc0k7iopQW4guaSJTojqpMEELgSLhKwRr",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAgreement(
+                value = "JhNWeSVLMYcc0k7iopQW4guaSJTojqpMEELgSLhKwRr",
+                type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val signingKeys = listOf(
@@ -393,13 +388,13 @@ class TestCreateNumalgo2 {
             VALID_X25519_KEY
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "ByHnpUCFb1vA0h9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAuthentication(
+                value = "ByHnpUCFb1vA0h9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+                type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
             ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAuthentication(
+                value = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
+                type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val service = VALID_SERVICE
@@ -415,9 +410,9 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2MalformedLongEncryptionKey() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWe",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAgreement(
+                value = "JhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWe",
+                type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val signingKeys = listOf(
@@ -436,9 +431,9 @@ class TestCreateNumalgo2 {
     @Test
     fun testCreateNumalgo2MalformedShortEncryptionKey() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                encodedValue = "JhNWeSV",
-                type = PublicKeyTypeAgreement.X25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAgreement(
+                value = "JhNWeSV",
+                type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val signingKeys = listOf(
@@ -460,13 +455,13 @@ class TestCreateNumalgo2 {
             VALID_X25519_KEY
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "JhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWe",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAuthentication(
+                value = "JhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWeSVJhNWe",
+                type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
             ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAuthentication(
+                value = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
+                type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val service = VALID_SERVICE
@@ -485,13 +480,13 @@ class TestCreateNumalgo2 {
             VALID_X25519_KEY
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                encodedValue = "JhNWeSV",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAuthentication(
+                value = "JhNWeSV",
+                type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
             ),
-            PublicKeyAuthentication(
-                encodedValue = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
-                type = PublicKeyTypeAuthentication.ED25519, encodingType = EncodingType.BASE58
+            VerificationMaterialAuthentication(
+                value = "3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
+                type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018, format = VerificationMaterialFormatPeerDID.BASE58
             )
         )
         val service = VALID_SERVICE

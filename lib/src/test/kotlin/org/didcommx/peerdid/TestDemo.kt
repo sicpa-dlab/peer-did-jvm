@@ -1,27 +1,22 @@
 package org.didcommx.peerdid
 
-import org.didcommx.peerdid.core.EncodingType
-import org.didcommx.peerdid.core.PublicKeyAgreement
-import org.didcommx.peerdid.core.PublicKeyAuthentication
-import org.didcommx.peerdid.core.PublicKeyTypeAgreement
-import org.didcommx.peerdid.core.PublicKeyTypeAuthentication
 import org.junit.jupiter.api.Test
 
 class TestDemo {
     @Test
     fun testCreateResolvePeerDID() {
         val encryptionKeys = listOf(
-            PublicKeyAgreement(
-                type = PublicKeyTypeAgreement.X25519,
-                encodingType = EncodingType.BASE58,
-                encodedValue = "DmgBSHMqaZiYqwNMEJJuxWzsGGC8jUYADrfSdBrC6L8s",
+            VerificationMaterialAgreement(
+                type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019,
+                format = VerificationMaterialFormatPeerDID.BASE58,
+                value = "DmgBSHMqaZiYqwNMEJJuxWzsGGC8jUYADrfSdBrC6L8s",
             )
         )
         val signingKeys = listOf(
-            PublicKeyAuthentication(
-                type = PublicKeyTypeAuthentication.ED25519,
-                encodingType = EncodingType.BASE58,
-                encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+            VerificationMaterialAuthentication(
+                type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018,
+                format = VerificationMaterialFormatPeerDID.BASE58,
+                value = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
             )
         )
         val service =
