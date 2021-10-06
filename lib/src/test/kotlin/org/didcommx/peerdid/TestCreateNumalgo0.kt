@@ -191,7 +191,7 @@ class TestCreateNumalgo0 {
         val ex = assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo0(key)
         }
-        assertTrue(ex.message!!.contains(Regex.fromLiteral("Invalid base58 encoding")))
+        assertTrue(ex.message!!.matches(Regex("Invalid base58 encoding.*")))
     }
 
     @ParameterizedTest
@@ -200,7 +200,7 @@ class TestCreateNumalgo0 {
         val ex = assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo0(key)
         }
-        assertTrue(ex.message!!.contains(Regex.fromLiteral("Invalid key")))
+        assertTrue(ex.message!!.matches(Regex("Invalid key.*")))
     }
 
     @ParameterizedTest
@@ -209,7 +209,7 @@ class TestCreateNumalgo0 {
         val ex = assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo0(key)
         }
-        assertTrue(ex.message!!.contains(Regex.fromLiteral("Invalid key")))
+        assertTrue(ex.message!!.matches(Regex("Invalid key.*")))
     }
 
     @ParameterizedTest
@@ -219,10 +219,10 @@ class TestCreateNumalgo0 {
             createPeerDIDNumalgo0(key)
         }
         val expectedError = when (key.format) {
-            VerificationMaterialFormatPeerDID.BASE58 -> "Invalid base58 encoding"
-            VerificationMaterialFormatPeerDID.MULTIBASE -> "No transform part in multibase encoding"
-            VerificationMaterialFormatPeerDID.JWK -> "Invalid key"
+            VerificationMaterialFormatPeerDID.BASE58 -> "Invalid base58 encoding.*"
+            VerificationMaterialFormatPeerDID.MULTIBASE -> "No transform part in multibase encoding.*"
+            VerificationMaterialFormatPeerDID.JWK -> "Invalid key.*"
         }
-        assertTrue(ex.message!!.contains(Regex.fromLiteral(expectedError)))
+        assertTrue(ex.message!!.matches(Regex(expectedError)))
     }
 }

@@ -17,7 +17,7 @@ fun resolvePeerDID(
     format: VerificationMaterialFormatPeerDID = VerificationMaterialFormatPeerDID.MULTIBASE
 ): String {
     if (!isPeerDID(peerDID)) {
-        throw MalformedPeerDIDException("Invalid Peer DID: $peerDID")
+        throw MalformedPeerDIDException("Does not match peer DID regexp: $peerDID")
     }
     val didDoc = when (peerDID[9]) {
         '0' -> buildDIDDocNumalgo0(peerDID, format)
