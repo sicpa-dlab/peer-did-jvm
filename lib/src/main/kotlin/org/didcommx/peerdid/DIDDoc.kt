@@ -39,9 +39,8 @@ data class DIDDocPeerDID(
         }
     }
 
-    fun authKids() = authentication.map { it.id }
-
-    fun agreemenrtKids() = keyAgreement.map { it.id }
+    val authenticationKids get() = authentication.map { it.id }
+    val agreementKids get() = keyAgreement.map { it.id }
 
     fun toDict(): Map<String, Any> {
         val res = mutableMapOf(

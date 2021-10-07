@@ -94,8 +94,8 @@ class TestDIDDocFromJson {
         assertEquals(testData.expectedAuthType, auth.verMaterial.type)
         assertEquals(expectedAuth[testData.expectedField.value], auth.verMaterial.value)
 
-        assertEquals(listOf(expectedAuth["id"]), didDoc.authKids())
-        assertTrue(didDoc.agreemenrtKids().isEmpty())
+        assertEquals(listOf(expectedAuth["id"]), didDoc.authenticationKids)
+        assertTrue(didDoc.agreementKids.isEmpty())
     }
 
     @ParameterizedTest
@@ -143,8 +143,8 @@ class TestDIDDocFromJson {
         assertEquals(expectedService["routingKeys"], service.routingKeys)
         assertEquals(expectedService["accept"], service.accept)
 
-        assertEquals(listOf(expectedAuth1["id"], expectedAuth2["id"]), didDoc.authKids())
-        assertEquals(listOf(expectedAgreem["id"]), didDoc.agreemenrtKids())
+        assertEquals(listOf(expectedAuth1["id"], expectedAuth2["id"]), didDoc.authenticationKids)
+        assertEquals(listOf(expectedAgreem["id"]), didDoc.agreementKids)
     }
 
     @Test
