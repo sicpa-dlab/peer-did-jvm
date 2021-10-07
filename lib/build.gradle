@@ -112,9 +112,8 @@ publishing {
                 developers {
                     // TODO
                     developer {
-                        id = ""
-                        name = ""
-                        email = ""
+                        name = "SICPA"
+                        email = "DLCHOpenSourceContrib@sicpa.com"
                     }
                 }
                 scm {
@@ -142,15 +141,17 @@ publishing {
 }
 
 signing {
-    // ORG_GRADLE_PROJECT_signingKeyId=<gpg-signingKeyId>
+    // ORG_GRADLE_PROJECT_signingKeyId=<gpg-signingKeyId> - in case of a sub-key
     // ORG_GRADLE_PROJECT_signingKey=<gpg-signingKey>
     // ORG_GRADLE_PROJECT_signingPassword=<gpg-signingPassword>
-    def signingKeyId = findProperty("signingKeyId")
+
     def signingKey = findProperty("signingKey")
     def signingPassword = findProperty("signingPassword")
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    // NOTE Maven Central doesn't support sub-keys so we have to use primary one
+    //def signingKeyId = findProperty("signingKeyId")
+    // useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    useInMemoryPgpKeys(signingKey, signingPassword)
 
-    // TODO test signing
     sign publishing.publications.maven
 }
 
