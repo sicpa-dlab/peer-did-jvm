@@ -10,17 +10,17 @@ only [static layers of support (1, 2a, 2b)](https://identity.foundation/peer-did
 Example code:
 
     val encryptionKeys = listOf(
-        PublicKeyAgreement(
-            type = PublicKeyTypeAgreement.X25519,
-            encodingType = EncodingType.BASE58,
-            encodedValue = "DmgBSHMqaZiYqwNMEJJuxWzsGGC8jUYADrfSdBrC6L8s",
+        VerificationMaterialAgreement(
+            type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019,
+            format = VerificationMaterialFormatPeerDID.BASE58,
+            value = "DmgBSHMqaZiYqwNMEJJuxWzsGGC8jUYADrfSdBrC6L8s",
         )
     )
     val signingKeys = listOf(
-        PublicKeyAuthentication(
-            type = PublicKeyTypeAuthentication.ED25519,
-            encodingType = EncodingType.BASE58,
-            encodedValue = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+        VerificationMaterialAuthentication(
+            type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2018,
+            format = VerificationMaterialFormatPeerDID.BASE58,
+            value = "ByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
         )
     )
     val service =
@@ -38,8 +38,11 @@ Example code:
         encryptionKeys, signingKeys, service
     )
 
-    val DIDDocAlgo0 = resolvePeerDID(peerDIDAlgo0)
-    val DIDDocAlgo2 = resolvePeerDID(peerDIDAlgo2)
+    val didDocAlgo0Json = resolvePeerDID(peerDIDAlgo0)
+    val didDocAlgo2Json = resolvePeerDID(peerDIDAlgo2)
+
+    val didDocAlgo0 = DIDDocPeerDID.fromJson(didDocAlgo0Json)
+    val didDocAlgo2 = DIDDocPeerDID.fromJson(didDocAlgo2Json)
 
 Example of DID documents:
 
@@ -97,10 +100,9 @@ Example of DID documents:
        }
 
 ## Assumptions and limitations
-- Input keys are expected in `base58` format only
 - Only `X25519` keys are support for key agreement
 - Only `Ed25519` keys are support for authentication
-- Supported verification materials in the resolved DID DOC:
+- Supported verification materials (input and in the resolved DID DOC):
     - [Default] 2020 verification materials (`Ed25519VerificationKey2020` and `X25519KeyAgreementKey2020`) with multibase base58 (`publicKeyMultibase`) public key encoding.
     - JWK (`JsonWebKey2020`) using JWK (`publicKeyJwk`) public key encoding
     - 2018/2019 verification materials (`Ed25519VerificationKey2018` and `X25519KeyAgreementKey2019`) using base58 (`publicKeyBase58`) public key encoding.

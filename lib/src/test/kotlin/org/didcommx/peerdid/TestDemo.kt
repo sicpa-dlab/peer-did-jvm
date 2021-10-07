@@ -39,10 +39,17 @@ class TestDemo {
         println("PeerDID algo 2:$peerDIDAlgo2")
         println("==================================")
 
-        val DIDDocAlgo0 = resolvePeerDID(peerDIDAlgo0)
-        val DIDDocAlgo2 = resolvePeerDID(peerDIDAlgo2)
-        println("DIDDoc algo 0:$DIDDocAlgo0")
+        val didDocAlgo0Json = resolvePeerDID(peerDIDAlgo0)
+        val didDocAlgo2Json = resolvePeerDID(peerDIDAlgo2)
+        println("DIDDoc algo 0:$didDocAlgo0Json")
         println("==================================")
-        print("DIDDoc algo 2:$DIDDocAlgo2")
+        print("DIDDoc algo 2:$didDocAlgo2Json")
+
+        val didDocAlgo0 = DIDDocPeerDID.fromJson(didDocAlgo0Json)
+        val didDocAlgo2 = DIDDocPeerDID.fromJson(didDocAlgo2Json)
+        println("DIDDoc algo 0:${didDocAlgo0.toDict()}")
+        println("==================================")
+        print("DIDDoc algo 2:${didDocAlgo2.toDict()}")
+
     }
 }
