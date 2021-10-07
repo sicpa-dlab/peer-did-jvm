@@ -2,14 +2,11 @@
 
 package org.didcommx.peerdid
 
-import org.didcommx.peerdid.core.JSON
 import org.didcommx.peerdid.core.Numalgo2Prefix
-import org.didcommx.peerdid.core.PeerDID
-import org.didcommx.peerdid.core.PublicKeyAgreement
-import org.didcommx.peerdid.core.PublicKeyAuthentication
-import org.didcommx.peerdid.core.checkKeyCorrectlyEncoded
 import org.didcommx.peerdid.core.createMultibaseEncnumbasis
 import org.didcommx.peerdid.core.encodeService
+import org.didcommx.peerdid.core.validateAgreementMaterialType
+import org.didcommx.peerdid.core.validateAuthenticationMaterialType
 
 /**
  * Checks if [peerDID] param matches PeerDID spec
@@ -36,9 +33,8 @@ fun isPeerDID(peerDID: String): Boolean {
  * @throws IllegalArgumentException if the [inceptionKey] is not correctly encoded
  * @return generated PeerDID
  */
-fun createPeerDIDNumalgo0(inceptionKey: PublicKeyAuthentication): PeerDID {
-    if (!checkKeyCorrectlyEncoded(inceptionKey.encodedValue, inceptionKey.encodingType))
-        throw IllegalArgumentException("Inception key $inceptionKey is not correctly encoded")
+fun createPeerDIDNumalgo0(inceptionKey: VerificationMaterialAuthentication): PeerDID {
+    validateAuthenticationMaterialType(inceptionKey)
     return "did:peer:0${createMultibaseEncnumbasis(inceptionKey)}"
 }
 
@@ -56,38 +52,22 @@ fun createPeerDIDNumalgo0(inceptionKey: PublicKeyAuthentication): PeerDID {
  * @return generated PeerDID
  */
 fun createPeerDIDNumalgo2(
-    encryptionKeys: List<PublicKeyAgreement>,
-    signingKeys: List<PublicKeyAuthentication>,
+    encryptionKeys: List<VerificationMaterialAgreement>,
+    signingKeys: List<VerificationMaterialAuthentication>,
     service: JSON?
 ): PeerDID {
-    val encodedEncryptionKeys = encryptionKeys.map { publicKey ->
-        if (!checkKeyCorrectlyEncoded(publicKey.encodedValue, publicKey.encodingType))
-            throw IllegalArgumentException("Encryption key $publicKey is not correctly encoded")
-        createMultibaseEncnumbasis(publicKey)
-    }
-    val encodedSigningKeys = signingKeys.map { publicKey ->
-        if (!checkKeyCorrectlyEncoded(publicKey.encodedValue, publicKey.encodingType))
-            throw IllegalArgumentException("Signing key $publicKey is not correctly encoded")
-        createMultibaseEncnumbasis(publicKey)
-    }
+    encryptionKeys.forEach { validateAgreementMaterialType(it) }
+    signingKeys.forEach { validateAuthenticationMaterialType(it) }
 
-    val encryptionKeysStr = if (encryptionKeys.isEmpty())
-        ""
-    else
-        encodedEncryptionKeys.joinToString(
-            ".${Numalgo2Prefix.KEY_AGREEMENT.prefix}",
-            ".${Numalgo2Prefix.KEY_AGREEMENT.prefix}"
-        )
-
-    val signingKeysStr = if (signingKeys.isEmpty())
-        ""
-    else
-        encodedSigningKeys.joinToString(
-            ".${Numalgo2Prefix.AUTHENTICATION.prefix}",
-            ".${Numalgo2Prefix.AUTHENTICATION.prefix}"
-        )
-
+    val encodedEncryptionKeysStr = encryptionKeys
+        .map { createMultibaseEncnumbasis(it) }
+        .map { ".${Numalgo2Prefix.KEY_AGREEMENT.prefix}$it" }
+        .joinToString("")
+    val encodedSigningKeysStr = signingKeys
+        .map { createMultibaseEncnumbasis(it) }
+        .map { ".${Numalgo2Prefix.AUTHENTICATION.prefix}$it" }
+        .joinToString("")
     val encodedService = if (service.isNullOrEmpty()) "" else encodeService(service)
 
-    return "did:peer:2$encryptionKeysStr$signingKeysStr$encodedService"
+    return "did:peer:2$encodedEncryptionKeysStr$encodedSigningKeysStr$encodedService"
 }

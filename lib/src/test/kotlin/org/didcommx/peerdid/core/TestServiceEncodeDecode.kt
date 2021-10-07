@@ -1,5 +1,6 @@
 package org.didcommx.peerdid.core
 
+import org.didcommx.peerdid.OtherService
 import org.didcommx.peerdid.PEER_DID_NUMALGO_2
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -26,12 +27,14 @@ class TestServiceEncodeDecode {
     @Test
     fun testDecodeService() {
         val expected = listOf(
-            mapOf(
-                "id" to PEER_DID_NUMALGO_2 + "#didcommmessaging-0",
-                "type" to "DIDCommMessaging",
-                "serviceEndpoint" to "https://example.com/endpoint",
-                "routingKeys" to listOf("did:example:somemediator#somekey"),
-                "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587"),
+            OtherService(
+                mapOf(
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
+                    "type" to "DIDCommMessaging",
+                    "serviceEndpoint" to "https://example.com/endpoint",
+                    "routingKeys" to listOf("did:example:somemediator#somekey"),
+                    "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587"),
+                )
             )
         )
         val service = decodeService(
@@ -59,10 +62,12 @@ class TestServiceEncodeDecode {
     @Test
     fun testDecodeServiceMinimalFields() {
         val expected = listOf(
-            mapOf(
-                "id" to PEER_DID_NUMALGO_2 + "#didcommmessaging-0",
-                "type" to "DIDCommMessaging",
-                "serviceEndpoint" to "https://example.com/endpoint"
+            OtherService(
+                mapOf(
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
+                    "type" to "DIDCommMessaging",
+                    "serviceEndpoint" to "https://example.com/endpoint"
+                )
             )
         )
         val service = decodeService(
@@ -99,18 +104,22 @@ class TestServiceEncodeDecode {
     @Test
     fun testDecodeServiceMultipleEntries() {
         val expected = listOf(
-            mapOf(
-                "id" to PEER_DID_NUMALGO_2 + "#didcommmessaging-0",
-                "type" to "DIDCommMessaging",
-                "serviceEndpoint" to "https://example.com/endpoint",
-                "routingKeys" to listOf("did:example:somemediator#somekey"),
-                "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587")
+            OtherService(
+                mapOf(
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
+                    "type" to "DIDCommMessaging",
+                    "serviceEndpoint" to "https://example.com/endpoint",
+                    "routingKeys" to listOf("did:example:somemediator#somekey"),
+                    "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587")
+                )
             ),
-            mapOf(
-                "id" to PEER_DID_NUMALGO_2 + "#didcommmessaging-1",
-                "type" to "DIDCommMessaging",
-                "serviceEndpoint" to "https://example.com/endpoint2",
-                "routingKeys" to listOf("did:example:somemediator#somekey2")
+            OtherService(
+                mapOf(
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-1",
+                    "type" to "DIDCommMessaging",
+                    "serviceEndpoint" to "https://example.com/endpoint2",
+                    "routingKeys" to listOf("did:example:somemediator#somekey2")
+                )
             )
         )
         val service = decodeService(
