@@ -32,10 +32,14 @@ internal fun didDocFromJson(jsonObject: JsonObject): DIDDocPeerDID {
         ?.asJsonArray
         ?.map { verificationMethodFromJson(it.asJsonObject) }
         ?: emptyList()
+    val service = jsonObject.get("service")
+        ?.asJsonArray
+        ?.map { serviceFromJson(it.asJsonObject)}
     return DIDDocPeerDID(
         did = did,
         authentication = authentication,
-        keyAgreement = keyAgreement
+        keyAgreement = keyAgreement,
+        service = service
     )
 }
 
@@ -47,7 +51,7 @@ internal fun verificationMethodFromJson(jsonObject: JsonObject): VerificationMet
     val type = jsonObject.get("type")?.asString
         ?: throw IllegalArgumentException("No 'type' field in method ${jsonObject.asString}")
 
-    val verMaterialType = verMatrialFromType(type, jsonObject)
+    val verMaterialType = verMaterialFromType(type, jsonObject)
     val field = verTypeToField.getValue(verMaterialType)
     val format = verTypeToFormat.getValue(verMaterialType)
     val value = if (verMaterialType is VerificationMethodTypeAgreement.JSON_WEB_KEY_2020 ||
@@ -72,7 +76,31 @@ internal fun verificationMethodFromJson(jsonObject: JsonObject): VerificationMet
     )
 }
 
-private fun verMatrialFromType(type: String, jsonObject: JsonObject) =
+internal fun serviceFromJson(jsonObject: JsonObject): Service {
+    val serviceMap = fromJsonToMap(jsonObject.toString())
+
+    val id = jsonObject.get(SERVICE_ID)?.asString
+        ?: throw IllegalArgumentException("No 'id' field in service ${jsonObject.asString}")
+    val type = jsonObject.get(SERVICE_TYPE)?.asString
+        ?: throw IllegalArgumentException("No 'type' field in service ${jsonObject.asString}")
+
+    if (type != SERVICE_DIDCOMM_MESSAGING)
+        return OtherService(serviceMap)
+
+    val endpoint = jsonObject.get(SERVICE_ENDPOINT)?.asString
+    val routingKeys = jsonObject.get(SERVICE_ROUTING_KEYS)?.asJsonArray?.map { it.asString }
+    val accept = jsonObject.get(SERVICE_ACCEPT)?.asJsonArray?.map { it.asString }
+
+    return DIDCommServicePeerDID(
+        id = id,
+        type = type,
+        serviceEndpoint = endpoint,
+        routingKeys = routingKeys,
+        accept = accept
+    )
+}
+
+private fun verMaterialFromType(type: String, jsonObject: JsonObject) =
     when (type) {
         VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019.value
         -> VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019

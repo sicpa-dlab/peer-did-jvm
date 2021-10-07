@@ -100,7 +100,7 @@ private fun decodeMultibaseEncnumbasisAgreement(
     }
 }
 
-private fun doDecodeService(service: String, peerDID: String): List<Map<String, Any>>? {
+private fun doDecodeService(service: String, peerDID: String): List<Service>? {
     try {
         return decodeService(service, peerDID)
     } catch (e: IllegalArgumentException) {

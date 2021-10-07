@@ -49,7 +49,7 @@ internal fun encodeService(service: JSON): String {
  * @throws IllegalArgumentException if service is not correctly decoded
  * @return decoded service
  */
-internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Map<String, Any>>? {
+internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Service>? {
     if (encodedService.isEmpty())
         return null
     val decodedService = Base64.decodeBase64(encodedService).decodeToString()
@@ -78,7 +78,7 @@ internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Map<Str
         serviceMap[ServicePrefix.getValue(SERVICE_ROUTING_KEYS)]?.let { service.put(SERVICE_ROUTING_KEYS, it) }
         serviceMap[ServicePrefix.getValue(SERVICE_ACCEPT)]?.let { service.put(SERVICE_ACCEPT, it) }
 
-        service
+        OtherService(service)
     }.toList()
 }
 

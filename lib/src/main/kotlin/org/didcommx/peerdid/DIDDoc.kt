@@ -1,33 +1,26 @@
 package org.didcommx.peerdid
 
-import com.google.gson.*
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializer
 import org.didcommx.peerdid.core.didDocFromJson
-import java.lang.reflect.Type
 
 
 data class DIDDocPeerDID(
     val did: String,
     val authentication: List<VerificationMethodPeerDID>,
     val keyAgreement: List<VerificationMethodPeerDID> = emptyList(),
-    val service: List<Map<String, Any>>? = null
+    val service: List<Service>? = null
 ) {
 
     companion object {
 
         fun fromJson(value: JSON): DIDDocPeerDID {
-            val deserializer = object : JsonDeserializer<DIDDocPeerDID> {
-
-                override fun deserialize(
-                    json: JsonElement?,
-                    typeOfT: Type?,
-                    context: JsonDeserializationContext?
-                ): DIDDocPeerDID {
+            val deserializer =
+                JsonDeserializer { json, typeOfT, context ->
                     val jsonObject = json?.asJsonObject
                         ?: throw IllegalArgumentException("Invalid JSON")
-                    return didDocFromJson(jsonObject)
+                    didDocFromJson(jsonObject)
                 }
-
-            }
 
             try {
                 return GsonBuilder()
@@ -53,7 +46,12 @@ data class DIDDocPeerDID(
             res["keyAgreement"] = keyAgreement.map { it.toDict() }
         }
         service?.let {
-            res["service"] = service
+            res["service"] = service.map {
+                when (it) {
+                    is OtherService -> it.data
+                    is DIDCommServicePeerDID -> it.toDict()
+                }
+            }
         }
         return res
     }
@@ -84,6 +82,30 @@ data class VerificationMethodPeerDID(
         publicKeyField().value to verMaterial.value,
     )
 }
+
+sealed interface Service {
+}
+
+data class OtherService(val data: Map<String, Any>) : Service
+
+data class DIDCommServicePeerDID(
+    val id: String, val type: String, val serviceEndpoint: String?, val routingKeys: List<String>?,
+    val accept: List<String>?
+) : Service {
+
+    fun toDict(): MutableMap<String, Any> {
+        val res = mutableMapOf<String, Any>(
+            SERVICE_ID to id,
+            SERVICE_TYPE to type,
+        )
+        serviceEndpoint?.let { res[SERVICE_ENDPOINT] = it }
+        routingKeys?.let { res[SERVICE_ROUTING_KEYS] = it }
+        accept?.let { res[SERVICE_ACCEPT] = it }
+        return res
+    }
+
+}
+
 
 enum class PublicKeyField(val value: String) {
     BASE58("publicKeyBase58"),
