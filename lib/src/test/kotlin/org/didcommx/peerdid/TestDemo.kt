@@ -50,6 +50,5 @@ class TestDemo {
         println("DIDDoc algo 0:${didDocAlgo0.toDict()}")
         println("==================================")
         print("DIDDoc algo 2:${didDocAlgo2.toDict()}")
-
     }
 }
