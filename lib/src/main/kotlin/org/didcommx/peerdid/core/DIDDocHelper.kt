@@ -15,6 +15,7 @@ import org.didcommx.peerdid.Service
 import org.didcommx.peerdid.VerificationMaterial
 import org.didcommx.peerdid.VerificationMaterialFormatPeerDID
 import org.didcommx.peerdid.VerificationMethodPeerDID
+import org.didcommx.peerdid.VerificationMethodType
 import org.didcommx.peerdid.VerificationMethodTypeAgreement
 import org.didcommx.peerdid.VerificationMethodTypeAuthentication
 
@@ -63,10 +64,8 @@ internal fun verificationMethodFromJson(jsonObject: JsonObject): VerificationMet
         ?: throw IllegalArgumentException("No 'id' field in method ${jsonObject.asString}")
     val controller = jsonObject.get("controller")?.asString
         ?: throw IllegalArgumentException("No 'controller' field in method ${jsonObject.asString}")
-    val type = jsonObject.get("type")?.asString
-        ?: throw IllegalArgumentException("No 'type' field in method ${jsonObject.asString}")
 
-    val verMaterialType = verMaterialFromType(type, jsonObject)
+    val verMaterialType = getVerMethodType(jsonObject)
     val field = verTypeToField.getValue(verMaterialType)
     val format = verTypeToFormat.getValue(verMaterialType)
     val value = if (verMaterialType is VerificationMethodTypeAgreement.JSON_WEB_KEY_2020 ||
@@ -114,8 +113,10 @@ internal fun serviceFromJson(jsonObject: JsonObject): Service {
     )
 }
 
-private fun verMaterialFromType(type: String, jsonObject: JsonObject) =
-    when (type) {
+private fun getVerMethodType(jsonObject: JsonObject): VerificationMethodType {
+    val type = jsonObject.get("type")?.asString
+        ?: throw IllegalArgumentException("No 'type' field in method ${jsonObject.asString}")
+    return when (type) {
         VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019.value
         -> VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019
 
@@ -135,7 +136,7 @@ private fun verMaterialFromType(type: String, jsonObject: JsonObject) =
                 ?: throw IllegalArgumentException("No 'crv' field in method ${jsonObject.asString}")
             if (crv == "X25519") VerificationMethodTypeAgreement.JSON_WEB_KEY_2020 else VerificationMethodTypeAuthentication.JSON_WEB_KEY_2020
         }
-
         else ->
             throw IllegalArgumentException("Unknown verification method type $type")
     }
+}
