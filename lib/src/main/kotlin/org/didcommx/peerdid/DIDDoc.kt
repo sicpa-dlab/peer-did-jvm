@@ -4,7 +4,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import org.didcommx.peerdid.core.didDocFromJson
 
-
 data class DIDDocPeerDID(
     val did: String,
     val authentication: List<VerificationMethodPeerDID>,
@@ -58,8 +57,6 @@ data class DIDDocPeerDID(
 
     fun toJson() =
         GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(toDict())
-
-
 }
 
 data class VerificationMethodPeerDID(
@@ -83,13 +80,15 @@ data class VerificationMethodPeerDID(
     )
 }
 
-sealed interface Service {
-}
+sealed interface Service
 
 data class OtherService(val data: Map<String, Any>) : Service
 
 data class DIDCommServicePeerDID(
-    val id: String, val type: String, val serviceEndpoint: String?, val routingKeys: List<String>?,
+    val id: String,
+    val type: String,
+    val serviceEndpoint: String?,
+    val routingKeys: List<String>?,
     val accept: List<String>?
 ) : Service {
 
@@ -103,9 +102,7 @@ data class DIDCommServicePeerDID(
         accept?.let { res[SERVICE_ACCEPT] = it }
         return res
     }
-
 }
-
 
 enum class PublicKeyField(val value: String) {
     BASE58("publicKeyBase58"),
@@ -119,4 +116,3 @@ const val SERVICE_ENDPOINT = "serviceEndpoint"
 const val SERVICE_DIDCOMM_MESSAGING = "DIDCommMessaging"
 const val SERVICE_ROUTING_KEYS = "routingKeys"
 const val SERVICE_ACCEPT = "accept"
-

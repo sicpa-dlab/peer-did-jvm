@@ -102,5 +102,4 @@ class TestResolveNumalgo0 {
         }
         assertTrue(ex.message!!.matches(Regex("Invalid peer DID provided.*Does not match peer DID regexp.*")))
     }
-
 }

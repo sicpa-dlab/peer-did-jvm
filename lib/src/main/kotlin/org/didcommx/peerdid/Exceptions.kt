@@ -14,8 +14,8 @@ open class PeerDIDException(message: String, cause: Throwable? = null) : Throwab
  * @param message - the detail message.
  * @param cause - the cause of this.
  */
-class MalformedPeerDIDException(message: String, cause: Throwable? = null)
-    : PeerDIDException("Invalid peer DID provided. $message", cause)
+class MalformedPeerDIDException(message: String, cause: Throwable? = null) :
+    PeerDIDException("Invalid peer DID provided. $message", cause)
 
 /**
  * Raised if the resolved peer DID Doc to be resolved in not a valid peer DID.
@@ -23,5 +23,5 @@ class MalformedPeerDIDException(message: String, cause: Throwable? = null)
  * @param message - the detail message.
  * @param cause - the cause of this.
  */
-class MalformedPeerDIDDOcException(cause: Throwable? = null)
-    : PeerDIDException("Invalid peer DID Doc", cause)
+class MalformedPeerDIDDOcException(cause: Throwable? = null) :
+    PeerDIDException("Invalid peer DID Doc", cause)

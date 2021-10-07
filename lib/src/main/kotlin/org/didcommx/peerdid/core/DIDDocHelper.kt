@@ -1,7 +1,22 @@
 package org.didcommx.peerdid.core
 
 import com.google.gson.JsonObject
-import org.didcommx.peerdid.*
+import org.didcommx.peerdid.DIDCommServicePeerDID
+import org.didcommx.peerdid.DIDDocPeerDID
+import org.didcommx.peerdid.OtherService
+import org.didcommx.peerdid.PublicKeyField
+import org.didcommx.peerdid.SERVICE_ACCEPT
+import org.didcommx.peerdid.SERVICE_DIDCOMM_MESSAGING
+import org.didcommx.peerdid.SERVICE_ENDPOINT
+import org.didcommx.peerdid.SERVICE_ID
+import org.didcommx.peerdid.SERVICE_ROUTING_KEYS
+import org.didcommx.peerdid.SERVICE_TYPE
+import org.didcommx.peerdid.Service
+import org.didcommx.peerdid.VerificationMaterial
+import org.didcommx.peerdid.VerificationMaterialFormatPeerDID
+import org.didcommx.peerdid.VerificationMethodPeerDID
+import org.didcommx.peerdid.VerificationMethodTypeAgreement
+import org.didcommx.peerdid.VerificationMethodTypeAuthentication
 
 private val verTypeToField = mapOf(
     VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019 to PublicKeyField.BASE58,
@@ -34,7 +49,7 @@ internal fun didDocFromJson(jsonObject: JsonObject): DIDDocPeerDID {
         ?: emptyList()
     val service = jsonObject.get("service")
         ?.asJsonArray
-        ?.map { serviceFromJson(it.asJsonObject)}
+        ?.map { serviceFromJson(it.asJsonObject) }
     return DIDDocPeerDID(
         did = did,
         authentication = authentication,
@@ -63,7 +78,6 @@ internal fun verificationMethodFromJson(jsonObject: JsonObject): VerificationMet
     } else {
         jsonObject.get(field.value)?.asString
             ?: throw IllegalArgumentException("No 'field' field in method ${jsonObject.asString}")
-
     }
 
     return VerificationMethodPeerDID(
@@ -123,5 +137,5 @@ private fun verMaterialFromType(type: String, jsonObject: JsonObject) =
         }
 
         else ->
-            throw IllegalArgumentException("Unknown verification method type ${type}")
+            throw IllegalArgumentException("Unknown verification method type $type")
     }

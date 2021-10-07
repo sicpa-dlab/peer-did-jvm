@@ -1,6 +1,12 @@
 package org.didcommx.peerdid.core
 
-import org.didcommx.peerdid.*
+import org.didcommx.peerdid.VerificationMaterial
+import org.didcommx.peerdid.VerificationMaterialAgreement
+import org.didcommx.peerdid.VerificationMaterialAuthentication
+import org.didcommx.peerdid.VerificationMaterialFormatPeerDID
+import org.didcommx.peerdid.VerificationMethodType
+import org.didcommx.peerdid.VerificationMethodTypeAgreement
+import org.didcommx.peerdid.VerificationMethodTypeAuthentication
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream

@@ -35,4 +35,3 @@ private fun getCodec(keyType: VerificationMethodType) =
 private fun getCodec(prefix: Int) =
     Codec.values().find { it.prefix == prefix }
         ?: throw IllegalArgumentException("Prefix $prefix not supported")
-

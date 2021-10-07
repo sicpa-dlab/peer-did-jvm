@@ -2,7 +2,10 @@ package org.didcommx.peerdid.core
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import org.didcommx.peerdid.*
+import org.didcommx.peerdid.VerificationMaterial
+import org.didcommx.peerdid.VerificationMethodType
+import org.didcommx.peerdid.VerificationMethodTypeAgreement
+import org.didcommx.peerdid.VerificationMethodTypeAuthentication
 
 internal fun validateAuthenticationMaterialType(verificationMaterial: VerificationMaterial<out VerificationMethodType>) {
     if (verificationMaterial.type !is VerificationMethodTypeAuthentication)

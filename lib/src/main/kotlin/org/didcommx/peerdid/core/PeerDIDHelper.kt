@@ -4,7 +4,23 @@ package org.didcommx.peerdid.core
 
 import com.google.gson.JsonSyntaxException
 import io.ipfs.multibase.binary.Base64
-import org.didcommx.peerdid.*
+import org.didcommx.peerdid.JSON
+import org.didcommx.peerdid.OtherService
+import org.didcommx.peerdid.PeerDID
+import org.didcommx.peerdid.SERVICE_ACCEPT
+import org.didcommx.peerdid.SERVICE_DIDCOMM_MESSAGING
+import org.didcommx.peerdid.SERVICE_ENDPOINT
+import org.didcommx.peerdid.SERVICE_ROUTING_KEYS
+import org.didcommx.peerdid.SERVICE_TYPE
+import org.didcommx.peerdid.Service
+import org.didcommx.peerdid.VerificationMaterial
+import org.didcommx.peerdid.VerificationMaterialAgreement
+import org.didcommx.peerdid.VerificationMaterialAuthentication
+import org.didcommx.peerdid.VerificationMaterialFormatPeerDID
+import org.didcommx.peerdid.VerificationMethodPeerDID
+import org.didcommx.peerdid.VerificationMethodType
+import org.didcommx.peerdid.VerificationMethodTypeAgreement
+import org.didcommx.peerdid.VerificationMethodTypeAuthentication
 
 internal enum class Numalgo2Prefix(val prefix: Char) {
     AUTHENTICATION('V'),
@@ -170,7 +186,7 @@ internal fun decodeMultibaseEncnumbasis(
 
 internal fun getVerificationMethod(did: String, decodedEncumbasis: DecodedEncumbasis) =
     VerificationMethodPeerDID(
-        id = "${did}#${decodedEncumbasis.encnumbasis}",
+        id = "$did#${decodedEncumbasis.encnumbasis}",
         controller = did,
         verMaterial = decodedEncumbasis.verMaterial
     )

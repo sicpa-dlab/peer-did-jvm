@@ -2,7 +2,13 @@
 
 package org.didcommx.peerdid
 
-import org.didcommx.peerdid.core.*
+import org.didcommx.peerdid.core.DecodedEncumbasis
+import org.didcommx.peerdid.core.Numalgo2Prefix
+import org.didcommx.peerdid.core.decodeMultibaseEncnumbasis
+import org.didcommx.peerdid.core.decodeService
+import org.didcommx.peerdid.core.getVerificationMethod
+import org.didcommx.peerdid.core.validateAgreementMaterialType
+import org.didcommx.peerdid.core.validateAuthenticationMaterialType
 
 /** Resolves [DIDDocPeerDID] from [PeerDID]
  * @param [peerDID] PeerDID to resolve

@@ -171,7 +171,6 @@ class TestCreateNumalgo0 {
                 )
             )
         }
-
     }
 
     @ParameterizedTest

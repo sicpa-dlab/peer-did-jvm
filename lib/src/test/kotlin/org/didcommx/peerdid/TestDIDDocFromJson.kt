@@ -48,7 +48,6 @@ class TestDIDDocFromJson {
                 ),
             )
 
-
         @JvmStatic
         fun didDocNumalgo2(): Stream<TestData> =
             Stream.of(
@@ -156,7 +155,6 @@ class TestDIDDocFromJson {
 
         assertNotNull(didDoc.service)
         assertEquals(2, didDoc.service?.size)
-
 
         val service1 = didDoc.service!![0]
         val expectedService1 =
@@ -385,5 +383,4 @@ class TestDIDDocFromJson {
             )
         }
     }
-
 }

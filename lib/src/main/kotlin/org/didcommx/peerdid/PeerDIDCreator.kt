@@ -2,7 +2,11 @@
 
 package org.didcommx.peerdid
 
-import org.didcommx.peerdid.core.*
+import org.didcommx.peerdid.core.Numalgo2Prefix
+import org.didcommx.peerdid.core.createMultibaseEncnumbasis
+import org.didcommx.peerdid.core.encodeService
+import org.didcommx.peerdid.core.validateAgreementMaterialType
+import org.didcommx.peerdid.core.validateAuthenticationMaterialType
 
 /**
  * Checks if [peerDID] param matches PeerDID spec
@@ -14,9 +18,9 @@ import org.didcommx.peerdid.core.*
 fun isPeerDID(peerDID: String): Boolean {
     val regex =
         (
-                "^did:peer:(([0](z)([1-9a-km-zA-HJ-NP-Z]{46,47}))" +
-                        "|(2((.[AEVID](z)([1-9a-km-zA-HJ-NP-Z]{46,47}))+(.(S)[0-9a-zA-Z=]*)?)))$"
-                ).toRegex()
+            "^did:peer:(([0](z)([1-9a-km-zA-HJ-NP-Z]{46,47}))" +
+                "|(2((.[AEVID](z)([1-9a-km-zA-HJ-NP-Z]{46,47}))+(.(S)[0-9a-zA-Z=]*)?)))$"
+            ).toRegex()
     return regex.matches(peerDID)
 }
 
@@ -57,11 +61,11 @@ fun createPeerDIDNumalgo2(
 
     val encodedEncryptionKeysStr = encryptionKeys
         .map { createMultibaseEncnumbasis(it) }
-        .map{".${Numalgo2Prefix.KEY_AGREEMENT.prefix}${it}"}
+        .map { ".${Numalgo2Prefix.KEY_AGREEMENT.prefix}$it" }
         .joinToString("")
     val encodedSigningKeysStr = signingKeys
         .map { createMultibaseEncnumbasis(it) }
-        .map{".${Numalgo2Prefix.AUTHENTICATION.prefix}${it}"}
+        .map { ".${Numalgo2Prefix.AUTHENTICATION.prefix}$it" }
         .joinToString("")
     val encodedService = if (service.isNullOrEmpty()) "" else encodeService(service)
 
