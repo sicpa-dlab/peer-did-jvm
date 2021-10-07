@@ -29,7 +29,7 @@ class TestServiceEncodeDecode {
         val expected = listOf(
             OtherService(
                 mapOf(
-                    "id" to PEER_DID_NUMALGO_2 + "#didcommmessaging-0",
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
                     "type" to "DIDCommMessaging",
                     "serviceEndpoint" to "https://example.com/endpoint",
                     "routingKeys" to listOf("did:example:somemediator#somekey"),
@@ -64,7 +64,7 @@ class TestServiceEncodeDecode {
         val expected = listOf(
             OtherService(
                 mapOf(
-                    "id" to PEER_DID_NUMALGO_2 + "#didcommmessaging-0",
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
                     "type" to "DIDCommMessaging",
                     "serviceEndpoint" to "https://example.com/endpoint"
                 )
@@ -106,7 +106,7 @@ class TestServiceEncodeDecode {
         val expected = listOf(
             OtherService(
                 mapOf(
-                    "id" to PEER_DID_NUMALGO_2 + "#didcommmessaging-0",
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
                     "type" to "DIDCommMessaging",
                     "serviceEndpoint" to "https://example.com/endpoint",
                     "routingKeys" to listOf("did:example:somemediator#somekey"),
@@ -115,7 +115,7 @@ class TestServiceEncodeDecode {
             ),
             OtherService(
                 mapOf(
-                    "id" to PEER_DID_NUMALGO_2 + "#didcommmessaging-1",
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-1",
                     "type" to "DIDCommMessaging",
                     "serviceEndpoint" to "https://example.com/endpoint2",
                     "routingKeys" to listOf("did:example:somemediator#somekey2")

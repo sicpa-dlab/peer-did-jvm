@@ -90,7 +90,7 @@ class TestCreateNumalgo2 {
             format = VerificationMaterialFormatPeerDID.JWK
         )
 
-        val VALID_SERVICE =
+        const val VALID_SERVICE =
             """
         {
             "type": "DIDCommMessaging",

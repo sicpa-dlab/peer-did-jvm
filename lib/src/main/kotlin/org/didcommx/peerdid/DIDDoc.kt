@@ -13,6 +13,13 @@ data class DIDDocPeerDID(
 
     companion object {
 
+        /**
+         * Creates a new instance of DIDDocPeerDID from the given DID Doc JSON.
+         *
+         * @param value DID Doc JSON
+         * @throws MalformedPeerDIDDOcException if the input DID Doc JSON is not a valid peerdid DID Doc
+         * @return [DIDDocPeerDID] instance
+         */
         fun fromJson(value: JSON): DIDDocPeerDID {
             val deserializer =
                 JsonDeserializer { json, typeOfT, context ->

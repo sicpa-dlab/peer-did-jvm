@@ -20,7 +20,6 @@ class MalformedPeerDIDException(message: String, cause: Throwable? = null) :
 /**
  * Raised if the resolved peer DID Doc to be resolved in not a valid peer DID.
  *
- * @param message - the detail message.
  * @param cause - the cause of this.
  */
 class MalformedPeerDIDDOcException(cause: Throwable? = null) :

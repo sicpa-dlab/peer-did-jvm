@@ -37,11 +37,3 @@ fun fromJwk(verMaterial: VerificationMaterial<out VerificationMethodType>): Byte
     val value = jwkDict["x"].toString()
     return Base64.decodeBase64(value)
 }
-
-fun getVerificationMethodType(jwkDict: Map<String, Any>): VerificationMethodType {
-    if (!jwkDict.containsKey("crv"))
-        throw IllegalArgumentException("Invalid JWK key - no 'crv' fields: $jwkDict")
-    val crv = jwkDict["crv"]
-    return if (crv == "X25519") VerificationMethodTypeAgreement.JSON_WEB_KEY_2020
-    else VerificationMethodTypeAuthentication.JSON_WEB_KEY_2020
-}
