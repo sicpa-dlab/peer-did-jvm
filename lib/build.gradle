@@ -116,6 +116,10 @@ publishing {
         //maven(MavenPublication) {
         //    from components.java
             artifactId = project.artifactId
+            // the following is required only for shadow
+            // https://github.com/johnrengelman/shadow/issues/544
+            artifact sourcesJar
+            artifact javadocJar
 
             pom {
                 name = "Peer DID"
