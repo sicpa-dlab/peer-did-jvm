@@ -1,9 +1,13 @@
-# Peer DID Kotlin library
+# Peer DID JVM
 
-This is an implementation of the [Peer DID method specification](https://identity.foundation/peer-did-method-spec/).
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Unit Tests](https://github.com/sicpa-dlab/peer-did-jvm/workflows/verify/badge.svg)](https://github.com/sicpa-dlab/peer-did-jvm/actions/workflows/verify.yml)
 
-This version of API implements
-only [static layers of support (1, 2a, 2b)](https://identity.foundation/peer-did-method-spec/#layers-of-support).
+
+Implementation of the [Peer DID method specification](https://identity.foundation/peer-did-method-spec/) 
+in Java/Kotlin and Android.
+
+Implements [static layers of support (1, 2a, 2b)](https://identity.foundation/peer-did-method-spec/#layers-of-support) only.
 
 ## Installation
 Available from Maven Central.
