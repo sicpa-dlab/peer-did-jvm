@@ -14,8 +14,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url 'https://maven.scijava.org/content/groups/public'
-        }
+        maven { url 'https://jitpack.io' }
     }
 }
