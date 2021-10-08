@@ -5,6 +5,26 @@ This is an implementation of the [Peer DID method specification](https://identit
 This version of API implements
 only [static layers of support (1, 2a, 2b)](https://identity.foundation/peer-did-method-spec/#layers-of-support).
 
+## Installation
+Available from Maven Central.
+
+Gradle:
+```
+dependencies {
+  implementation 'org.didcommx:peerdid:0.2.0'
+}
+```
+
+
+Maven:
+```
+<dependency>
+  <groupId>org.didcommx</groupId>
+  <artifactId>peerdid</artifactId>
+  <version>0.2.0</version>
+</dependency>
+```
+
 ## Example
 
 Example code:
@@ -100,6 +120,7 @@ Example of DID documents:
        }
 
 ## Assumptions and limitations
+- Only static layers [1, 2a, 2b](https://identity.foundation/peer-did-method-spec/#layers-of-support) are supported
 - Only `X25519` keys are support for key agreement
 - Only `Ed25519` keys are support for authentication
 - Supported verification materials (input and in the resolved DID DOC):
