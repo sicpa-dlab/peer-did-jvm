@@ -25,12 +25,12 @@ kotlin {
 
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    shadow "org.jetbrains.kotlin:kotlin-stdlib"
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation "com.google.code.gson:gson:${googleGson}"
+    shadow "com.google.code.gson:gson:${googleGson}"
     // https://mvnrepository.com/artifact/com.github.multiformats/java-multibase
     implementation "com.github.multiformats:java-multibase:${javaMultibase}"
-    implementation "com.zmannotes:varint:${zmanVarint}"
+    shadow "com.zmannotes:varint:${zmanVarint}"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter-params:${jUnitJupiter}"
 }
@@ -71,7 +71,15 @@ shadowJar {
     exclude("**/*.kotlin_metadata")
     exclude("**/*.kotlin_builtins")
 
+    dependencies {
+        include(dependency("com.github.multiformats:java-multibase"))
+    }
+
     archiveClassifier.set("") // remove suffix `-all` as intellij can"t find the library otherwise
+
+    // NOTE as an option but optimizes not much for now
+    // https://imperceptiblethoughts.com/shadow/configuration/minimizing/
+    // minimize()
 }
 
 // benchmarks
@@ -95,9 +103,11 @@ java {
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        //maven(MavenPublication) {
+        //    from components.java
             artifactId = project.artifactId
-            from components.java
 
             pom {
                 name = "Peer DID"
@@ -152,7 +162,8 @@ signing {
     // useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     useInMemoryPgpKeys(signingKey, signingPassword)
 
-    sign publishing.publications.maven
+    // sign publishing.publications.maven
+    sign publishing.publications.shadow
 }
 
 
