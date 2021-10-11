@@ -25,7 +25,7 @@ class TestCreateNumalgo2 {
         )
 
         val VALID_X25519_KEY_MULTIBASE = VerificationMaterialAgreement(
-            value = "zJhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
+            value = "z6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc",
             type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2020,
             format = VerificationMaterialFormatPeerDID.MULTIBASE
         )
@@ -56,7 +56,7 @@ class TestCreateNumalgo2 {
             format = VerificationMaterialFormatPeerDID.BASE58
         )
         val VALID_ED25519_KEY_1_MULTIBASE = VerificationMaterialAuthentication(
-            value = "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+            value = "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
             type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
             format = VerificationMaterialFormatPeerDID.MULTIBASE
         )
@@ -76,7 +76,7 @@ class TestCreateNumalgo2 {
             format = VerificationMaterialFormatPeerDID.BASE58
         )
         val VALID_ED25519_KEY_2_MULTIBASE = VerificationMaterialAuthentication(
-            value = "z3M5RCDjPTWPkKSN3sxUmmMqHbmRPegYP1tjcKyrDbt9J",
+            value = "z6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg",
             type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
             format = VerificationMaterialFormatPeerDID.MULTIBASE
         )
@@ -297,7 +297,7 @@ class TestCreateNumalgo2 {
                 service = service
             )
         }
-        assertTrue(ex.message!!.matches(Regex("Invalid base58 encoding.*")))
+        assertTrue(ex.message!!.matches(Regex("Invalid key: Invalid base58 encoding.*")))
     }
 
     @Test
@@ -323,7 +323,7 @@ class TestCreateNumalgo2 {
                 service = service
             )
         }
-        assertTrue(ex.message!!.matches(Regex("Invalid base58 encoding.*")))
+        assertTrue(ex.message!!.matches(Regex("Invalid key: Invalid base58 encoding.*")))
     }
 
     @Test
@@ -435,7 +435,7 @@ class TestCreateNumalgo2 {
                 service = service
             )
         }
-        assertTrue(ex.message!!.matches(Regex("Invalid base58 encoding.*")))
+        assertTrue(ex.message!!.matches(Regex("Invalid key: Invalid base58 encoding.*")))
     }
 
     @Test
@@ -461,7 +461,7 @@ class TestCreateNumalgo2 {
                 service = service
             )
         }
-        assertTrue(ex.message!!.matches(Regex("Invalid base58 encoding.*")))
+        assertTrue(ex.message!!.matches(Regex("Invalid key: Invalid base58 encoding.*")))
     }
 
     @Test

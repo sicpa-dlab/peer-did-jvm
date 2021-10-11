@@ -49,7 +49,7 @@ internal class TestEncumbasisEncodeDecode {
                     VerificationMaterialAuthentication(
                         format = VerificationMaterialFormatPeerDID.MULTIBASE,
                         type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
-                        value = "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+                        value = "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
                     ),
                 ),
                 DecodeEncumbasisTestData(
@@ -58,7 +58,7 @@ internal class TestEncumbasisEncodeDecode {
                     VerificationMaterialAgreement(
                         format = VerificationMaterialFormatPeerDID.MULTIBASE,
                         type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2020,
-                        value = "zJhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
+                        value = "z6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc",
                     ),
                 ),
                 DecodeEncumbasisTestData(
