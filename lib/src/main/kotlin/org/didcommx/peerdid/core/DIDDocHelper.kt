@@ -12,12 +12,12 @@ import org.didcommx.peerdid.SERVICE_ID
 import org.didcommx.peerdid.SERVICE_ROUTING_KEYS
 import org.didcommx.peerdid.SERVICE_TYPE
 import org.didcommx.peerdid.Service
-import org.didcommx.peerdid.VerificationMaterial
 import org.didcommx.peerdid.VerificationMaterialFormatPeerDID
+import org.didcommx.peerdid.VerificationMaterialPeerDID
 import org.didcommx.peerdid.VerificationMethodPeerDID
-import org.didcommx.peerdid.VerificationMethodType
 import org.didcommx.peerdid.VerificationMethodTypeAgreement
 import org.didcommx.peerdid.VerificationMethodTypeAuthentication
+import org.didcommx.peerdid.VerificationMethodTypePeerDID
 
 private val verTypeToField = mapOf(
     VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2019 to PublicKeyField.BASE58,
@@ -81,7 +81,7 @@ internal fun verificationMethodFromJson(jsonObject: JsonObject): VerificationMet
 
     return VerificationMethodPeerDID(
         id = id, controller = controller,
-        verMaterial = VerificationMaterial(
+        verMaterial = VerificationMaterialPeerDID(
             format = format,
             type = verMaterialType,
             value = value
@@ -107,13 +107,13 @@ internal fun serviceFromJson(jsonObject: JsonObject): Service {
     return DIDCommServicePeerDID(
         id = id,
         type = type,
-        serviceEndpoint = endpoint,
-        routingKeys = routingKeys,
-        accept = accept
+        serviceEndpoint = endpoint ?: "",
+        routingKeys = routingKeys ?: emptyList(),
+        accept = accept ?: emptyList()
     )
 }
 
-private fun getVerMethodType(jsonObject: JsonObject): VerificationMethodType {
+private fun getVerMethodType(jsonObject: JsonObject): VerificationMethodTypePeerDID {
     val type = jsonObject.get("type")?.asString
         ?: throw IllegalArgumentException("No 'type' field in method ${jsonObject.asString}")
     return when (type) {
