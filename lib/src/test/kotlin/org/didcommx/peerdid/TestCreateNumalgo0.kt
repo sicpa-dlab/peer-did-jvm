@@ -1,6 +1,7 @@
 package org.didcommx.peerdid
 
 import org.didcommx.peerdid.core.toJson
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -21,7 +22,7 @@ class TestCreateNumalgo0 {
                     format = VerificationMaterialFormatPeerDID.BASE58,
                 ),
                 VerificationMaterialAuthentication(
-                    value = "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+                    value = "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
                     type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
                     format = VerificationMaterialFormatPeerDID.MULTIBASE,
                 ),
@@ -73,7 +74,7 @@ class TestCreateNumalgo0 {
                     format = VerificationMaterialFormatPeerDID.BASE58,
                 ),
                 VerificationMaterialAuthentication(
-                    value = "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8",
+                    value = "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7",
                     type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
                     format = VerificationMaterialFormatPeerDID.MULTIBASE,
                 ),
@@ -109,7 +110,7 @@ class TestCreateNumalgo0 {
                     format = VerificationMaterialFormatPeerDID.BASE58,
                 ),
                 VerificationMaterialAuthentication(
-                    value = "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L77",
+                    value = "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7VVV",
                     type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
                     format = VerificationMaterialFormatPeerDID.MULTIBASE,
                 ),
@@ -190,7 +191,7 @@ class TestCreateNumalgo0 {
         val ex = assertThrows<IllegalArgumentException> {
             createPeerDIDNumalgo0(key)
         }
-        assertTrue(ex.message!!.matches(Regex("Invalid base58 encoding.*")))
+        assertTrue(ex.message!!.matches(Regex("Invalid key: Invalid base58 encoding.*")))
     }
 
     @ParameterizedTest
@@ -218,10 +219,23 @@ class TestCreateNumalgo0 {
             createPeerDIDNumalgo0(key)
         }
         val expectedError = when (key.format) {
-            VerificationMaterialFormatPeerDID.BASE58 -> "Invalid base58 encoding.*"
-            VerificationMaterialFormatPeerDID.MULTIBASE -> "No transform part in multibase encoding.*"
+            VerificationMaterialFormatPeerDID.BASE58 -> "Invalid key: Invalid base58 encoding.*"
+            VerificationMaterialFormatPeerDID.MULTIBASE -> "Invalid key: No transform part in multibase encoding.*"
             VerificationMaterialFormatPeerDID.JWK -> "Invalid key.*"
         }
         assertTrue(ex.message!!.matches(Regex(expectedError)))
+    }
+
+    @Test
+    fun testCreateNumalgo0InvalidMulticodecPrefix() {
+        val key = VerificationMaterialAuthentication(
+            value = "z78kqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
+            type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
+            format = VerificationMaterialFormatPeerDID.MULTIBASE,
+        )
+        val ex = assertThrows<IllegalArgumentException> {
+            createPeerDIDNumalgo0(key)
+        }
+        assertTrue(ex.message!!.matches(Regex("Invalid key: Prefix.*not supported.*")))
     }
 }

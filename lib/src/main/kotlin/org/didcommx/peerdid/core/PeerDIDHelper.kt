@@ -109,7 +109,7 @@ internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Service
 internal fun createMultibaseEncnumbasis(key: VerificationMaterial<out VerificationMethodType>): String {
     val decodedKey = when (key.format) {
         VerificationMaterialFormatPeerDID.BASE58 -> fromBase58(key.value.toString())
-        VerificationMaterialFormatPeerDID.MULTIBASE -> fromBase58Multibase(key.value.toString()).second
+        VerificationMaterialFormatPeerDID.MULTIBASE -> fromMulticodec(fromBase58Multibase(key.value.toString()).second).second
         VerificationMaterialFormatPeerDID.JWK -> fromJwk(key)
     }
     validateRawKeyLength(decodedKey)
@@ -155,12 +155,22 @@ internal fun decodeMultibaseEncnumbasis(
                 Codec.X25519 -> VerificationMaterialAgreement(
                     format = format,
                     type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2020,
-                    value = toBase58Multibase(decodedEncnumbasisWithoutPrefix)
+                    value = toBase58Multibase(
+                        toMulticodec(
+                            decodedEncnumbasisWithoutPrefix,
+                            VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2020
+                        )
+                    )
                 )
                 Codec.ED25519 -> VerificationMaterialAuthentication(
                     format = format,
                     type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
-                    value = toBase58Multibase(decodedEncnumbasisWithoutPrefix)
+                    value = toBase58Multibase(
+                        toMulticodec(
+                            decodedEncnumbasisWithoutPrefix,
+                            VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020
+                        )
+                    )
                 )
             }
         VerificationMaterialFormatPeerDID.JWK ->
