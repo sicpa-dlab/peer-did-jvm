@@ -1,9 +1,9 @@
 package org.didcommx.peerdid.core
 
 import com.zman.varint.VarInt
-import org.didcommx.peerdid.VerificationMethodType
 import org.didcommx.peerdid.VerificationMethodTypeAgreement
 import org.didcommx.peerdid.VerificationMethodTypeAuthentication
+import org.didcommx.peerdid.VerificationMethodTypePeerDID
 import java.nio.ByteBuffer
 
 enum class Codec(val prefix: Int) {
@@ -11,7 +11,7 @@ enum class Codec(val prefix: Int) {
     ED25519(0xED);
 }
 
-fun toMulticodec(value: ByteArray, keyType: VerificationMethodType): ByteArray {
+fun toMulticodec(value: ByteArray, keyType: VerificationMethodTypePeerDID): ByteArray {
     val prefix = getCodec(keyType).prefix
     val byteBuffer = ByteBuffer.allocate(2)
     VarInt.writeVarInt(prefix, byteBuffer)
@@ -26,7 +26,7 @@ fun fromMulticodec(value: ByteArray): Pair<Codec, ByteArray> {
     return Pair(codec, value.drop(byteBuffer.array().size).toByteArray())
 }
 
-private fun getCodec(keyType: VerificationMethodType) =
+private fun getCodec(keyType: VerificationMethodTypePeerDID) =
     when (keyType) {
         is VerificationMethodTypeAuthentication -> Codec.ED25519
         is VerificationMethodTypeAgreement -> Codec.X25519
