@@ -1,12 +1,12 @@
 package org.didcommx.peerdid.core
 
 import io.ipfs.multibase.binary.Base64
-import org.didcommx.peerdid.VerificationMaterial
-import org.didcommx.peerdid.VerificationMethodType
+import org.didcommx.peerdid.VerificationMaterialPeerDID
 import org.didcommx.peerdid.VerificationMethodTypeAgreement
 import org.didcommx.peerdid.VerificationMethodTypeAuthentication
+import org.didcommx.peerdid.VerificationMethodTypePeerDID
 
-fun toJwk(publicKey: ByteArray, verMethodType: VerificationMethodType): Map<String, String> {
+fun toJwk(publicKey: ByteArray, verMethodType: VerificationMethodTypePeerDID): Map<String, String> {
     val x = Base64.encodeBase64URLSafe(publicKey).decodeToString()
     val crv = when (verMethodType) {
         VerificationMethodTypeAuthentication.JSON_WEB_KEY_2020 -> "Ed25519"
@@ -20,7 +20,7 @@ fun toJwk(publicKey: ByteArray, verMethodType: VerificationMethodType): Map<Stri
     )
 }
 
-fun fromJwk(verMaterial: VerificationMaterial<out VerificationMethodType>): ByteArray {
+fun fromJwk(verMaterial: VerificationMaterialPeerDID<out VerificationMethodTypePeerDID>): ByteArray {
     val jwkDict = if (verMaterial.value is Map<*, *>) verMaterial.value else fromJsonToMap(verMaterial.value.toString())
 
     if (!jwkDict.containsKey("crv"))

@@ -1,12 +1,12 @@
 package org.didcommx.peerdid.core
 
-import org.didcommx.peerdid.VerificationMaterial
 import org.didcommx.peerdid.VerificationMaterialAgreement
 import org.didcommx.peerdid.VerificationMaterialAuthentication
 import org.didcommx.peerdid.VerificationMaterialFormatPeerDID
-import org.didcommx.peerdid.VerificationMethodType
+import org.didcommx.peerdid.VerificationMaterialPeerDID
 import org.didcommx.peerdid.VerificationMethodTypeAgreement
 import org.didcommx.peerdid.VerificationMethodTypeAuthentication
+import org.didcommx.peerdid.VerificationMethodTypePeerDID
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
@@ -15,7 +15,7 @@ import kotlin.test.assertEquals
 internal data class DecodeEncumbasisTestData(
     val inputMultibase: String,
     val format: VerificationMaterialFormatPeerDID,
-    val expected: VerificationMaterial<out VerificationMethodType>
+    val expected: VerificationMaterialPeerDID<out VerificationMethodTypePeerDID>
 )
 
 internal class TestEncumbasisEncodeDecode {
@@ -49,7 +49,7 @@ internal class TestEncumbasisEncodeDecode {
                     VerificationMaterialAuthentication(
                         format = VerificationMaterialFormatPeerDID.MULTIBASE,
                         type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
-                        value = "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7",
+                        value = "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
                     ),
                 ),
                 DecodeEncumbasisTestData(
@@ -58,7 +58,7 @@ internal class TestEncumbasisEncodeDecode {
                     VerificationMaterialAgreement(
                         format = VerificationMaterialFormatPeerDID.MULTIBASE,
                         type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2020,
-                        value = "zJhNWeSVLMYccCk7iopQW4guaSJTojqpMEELgSLhKwRr",
+                        value = "z6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc",
                     ),
                 ),
                 DecodeEncumbasisTestData(

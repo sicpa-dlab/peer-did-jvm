@@ -15,8 +15,8 @@ class TestDIDDocFromJson {
     data class TestData(
         val didDoc: JSON,
         val expectedFormat: VerificationMaterialFormatPeerDID,
-        val expectedAuthType: VerificationMethodType,
-        val expectedAgreemType: VerificationMethodType,
+        val expectedAuthType: VerificationMethodTypePeerDID,
+        val expectedAgreemType: VerificationMethodTypePeerDID,
         val expectedField: PublicKeyField
     )
 
@@ -164,7 +164,7 @@ class TestDIDDocFromJson {
         assertEquals(expectedService1["serviceEndpoint"], service1.serviceEndpoint)
         assertEquals(expectedService1["type"], service1.type)
         assertEquals(expectedService1["routingKeys"], service1.routingKeys)
-        assertEquals(expectedService1["accept"], service1.accept)
+        assertTrue(service1.accept.isEmpty())
 
         val service2 = didDoc.service!![1]
         val expectedService2 =
@@ -198,8 +198,8 @@ class TestDIDDocFromJson {
         )
         assertEquals("https://example.com/endpoint", service.serviceEndpoint)
         assertEquals("DIDCommMessaging", service.type)
-        assertNull(service.routingKeys)
-        assertNull(service.accept)
+        assertTrue(service.routingKeys.isEmpty())
+        assertTrue(service.accept.isEmpty())
     }
 
     @Test
@@ -232,7 +232,7 @@ class TestDIDDocFromJson {
                                "id": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V#6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
                                "type": "Ed25519VerificationKey2020",
                                "controller": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
-                               "publicKeyMultibase": "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7"
+                               "publicKeyMultibase": "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V"
                            }
                        ]
                    }
@@ -252,7 +252,7 @@ class TestDIDDocFromJson {
                            {
                                "type": "Ed25519VerificationKey2020",
                                "controller": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
-                               "publicKeyMultibase": "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7"
+                               "publicKeyMultibase": "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V"
                            }
                        ]
                    }
@@ -272,7 +272,7 @@ class TestDIDDocFromJson {
                            {
                                "id": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V#6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
                                "controller": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
-                               "publicKeyMultibase": "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7"
+                               "publicKeyMultibase": "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V"
                            }
                        ]
                    }
@@ -292,7 +292,7 @@ class TestDIDDocFromJson {
                            {
                                "id": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V#6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
                                "type": "Ed25519VerificationKey2020",
-                               "publicKeyMultibase": "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7"
+                               "publicKeyMultibase": "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V"
                            }
                        ]
                    }
@@ -333,7 +333,7 @@ class TestDIDDocFromJson {
                                "id": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V#6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
                                "type": "Unkknown",
                                "controller": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
-                               "publicKeyMultibase": "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7"
+                               "publicKeyMultibase": "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V"
                            }
                        ]
                    }
@@ -354,7 +354,7 @@ class TestDIDDocFromJson {
                                "id": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V#6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
                                "type": "Ed25519VerificationKey2020",
                                "controller": "did:peer:0z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V",
-                               "publicKeyJwk": "zByHnpUCFb1vAfh9CFZ8ZkmUZguURW8nSw889hy6rD8L7"
+                               "publicKeyJwk": "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V"
                            }
                        ]
                    }

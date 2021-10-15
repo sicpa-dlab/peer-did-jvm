@@ -68,7 +68,7 @@ data class DIDDocPeerDID(
 data class VerificationMethodPeerDID(
     val id: String,
     val controller: String,
-    val verMaterial: VerificationMaterial<out VerificationMethodType>
+    val verMaterial: VerificationMaterialPeerDID<out VerificationMethodTypePeerDID>
 ) {
 
     private fun publicKeyField() =
@@ -93,9 +93,9 @@ data class OtherService(val data: Map<String, Any>) : Service
 data class DIDCommServicePeerDID(
     val id: String,
     val type: String,
-    val serviceEndpoint: String?,
-    val routingKeys: List<String>?,
-    val accept: List<String>?
+    val serviceEndpoint: String,
+    val routingKeys: List<String>,
+    val accept: List<String>
 ) : Service {
 
     fun toDict(): MutableMap<String, Any> {
@@ -103,9 +103,9 @@ data class DIDCommServicePeerDID(
             SERVICE_ID to id,
             SERVICE_TYPE to type,
         )
-        serviceEndpoint?.let { res[SERVICE_ENDPOINT] = it }
-        routingKeys?.let { res[SERVICE_ROUTING_KEYS] = it }
-        accept?.let { res[SERVICE_ACCEPT] = it }
+        res[SERVICE_ENDPOINT] = serviceEndpoint
+        res[SERVICE_ROUTING_KEYS] = routingKeys
+        res[SERVICE_ACCEPT] = accept
         return res
     }
 }

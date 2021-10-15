@@ -2,17 +2,17 @@ package org.didcommx.peerdid.core
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import org.didcommx.peerdid.VerificationMaterial
-import org.didcommx.peerdid.VerificationMethodType
+import org.didcommx.peerdid.VerificationMaterialPeerDID
 import org.didcommx.peerdid.VerificationMethodTypeAgreement
 import org.didcommx.peerdid.VerificationMethodTypeAuthentication
+import org.didcommx.peerdid.VerificationMethodTypePeerDID
 
-internal fun validateAuthenticationMaterialType(verificationMaterial: VerificationMaterial<out VerificationMethodType>) {
+internal fun validateAuthenticationMaterialType(verificationMaterial: VerificationMaterialPeerDID<out VerificationMethodTypePeerDID>) {
     if (verificationMaterial.type !is VerificationMethodTypeAuthentication)
         throw IllegalArgumentException("Invalid verification material type: ${verificationMaterial.type} instead of VerificationMaterialAuthentication")
 }
 
-internal fun validateAgreementMaterialType(verificationMaterial: VerificationMaterial<out VerificationMethodType>) {
+internal fun validateAgreementMaterialType(verificationMaterial: VerificationMaterialPeerDID<out VerificationMethodTypePeerDID>) {
     if (verificationMaterial.type !is VerificationMethodTypeAgreement)
         throw IllegalArgumentException("Invalid verification material type: ${verificationMaterial.type} instead of VerificationMaterialAgreement")
 }

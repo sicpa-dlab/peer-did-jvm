@@ -13,14 +13,14 @@ import org.didcommx.peerdid.SERVICE_ENDPOINT
 import org.didcommx.peerdid.SERVICE_ROUTING_KEYS
 import org.didcommx.peerdid.SERVICE_TYPE
 import org.didcommx.peerdid.Service
-import org.didcommx.peerdid.VerificationMaterial
 import org.didcommx.peerdid.VerificationMaterialAgreement
 import org.didcommx.peerdid.VerificationMaterialAuthentication
 import org.didcommx.peerdid.VerificationMaterialFormatPeerDID
+import org.didcommx.peerdid.VerificationMaterialPeerDID
 import org.didcommx.peerdid.VerificationMethodPeerDID
-import org.didcommx.peerdid.VerificationMethodType
 import org.didcommx.peerdid.VerificationMethodTypeAgreement
 import org.didcommx.peerdid.VerificationMethodTypeAuthentication
+import org.didcommx.peerdid.VerificationMethodTypePeerDID
 
 internal enum class Numalgo2Prefix(val prefix: Char) {
     AUTHENTICATION('V'),
@@ -106,10 +106,10 @@ internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Service
  * @throws IllegalArgumentException if key is invalid
  * @return transform+encnumbasis
  */
-internal fun createMultibaseEncnumbasis(key: VerificationMaterial<out VerificationMethodType>): String {
+internal fun createMultibaseEncnumbasis(key: VerificationMaterialPeerDID<out VerificationMethodTypePeerDID>): String {
     val decodedKey = when (key.format) {
         VerificationMaterialFormatPeerDID.BASE58 -> fromBase58(key.value.toString())
-        VerificationMaterialFormatPeerDID.MULTIBASE -> fromBase58Multibase(key.value.toString()).second
+        VerificationMaterialFormatPeerDID.MULTIBASE -> fromMulticodec(fromBase58Multibase(key.value.toString()).second).second
         VerificationMaterialFormatPeerDID.JWK -> fromJwk(key)
     }
     validateRawKeyLength(decodedKey)
@@ -118,7 +118,7 @@ internal fun createMultibaseEncnumbasis(key: VerificationMaterial<out Verificati
 
 internal data class DecodedEncumbasis(
     val encnumbasis: String,
-    val verMaterial: VerificationMaterial<out VerificationMethodType>
+    val verMaterial: VerificationMaterialPeerDID<out VerificationMethodTypePeerDID>
 )
 
 /**
@@ -155,12 +155,22 @@ internal fun decodeMultibaseEncnumbasis(
                 Codec.X25519 -> VerificationMaterialAgreement(
                     format = format,
                     type = VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2020,
-                    value = toBase58Multibase(decodedEncnumbasisWithoutPrefix)
+                    value = toBase58Multibase(
+                        toMulticodec(
+                            decodedEncnumbasisWithoutPrefix,
+                            VerificationMethodTypeAgreement.X25519_KEY_AGREEMENT_KEY_2020
+                        )
+                    )
                 )
                 Codec.ED25519 -> VerificationMaterialAuthentication(
                     format = format,
                     type = VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020,
-                    value = toBase58Multibase(decodedEncnumbasisWithoutPrefix)
+                    value = toBase58Multibase(
+                        toMulticodec(
+                            decodedEncnumbasisWithoutPrefix,
+                            VerificationMethodTypeAuthentication.ED25519_VERIFICATION_KEY_2020
+                        )
+                    )
                 )
             }
         VerificationMaterialFormatPeerDID.JWK ->
