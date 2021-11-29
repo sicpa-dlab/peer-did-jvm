@@ -1,5 +1,6 @@
 # Peer DID JVM
 
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Unit Tests](https://github.com/sicpa-dlab/peer-did-jvm/workflows/verify/badge.svg)](https://github.com/sicpa-dlab/peer-did-jvm/actions/workflows/verify.yml)
 
