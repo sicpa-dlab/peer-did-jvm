@@ -2,8 +2,6 @@ plugins {
     id "java-library"
     id "org.jetbrains.kotlin.jvm"
     id "org.jlleitschuh.gradle.ktlint" version "${ktlintGradle}"
-    // TODO: remove once published to Maven
-    id "com.github.johnrengelman.shadow" version "${johnrengelmanShadow}"
 
     // JMH benchmarks
     // id "me.champeau.jmh" version "${champeauJMH}"
@@ -15,6 +13,7 @@ plugins {
 
 project.ext.artifactId = rootProject.name
 archivesBaseName = project.artifactId
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 kotlin {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -23,19 +22,9 @@ kotlin {
 
 
 dependencies {
-    shadow "org.jetbrains.kotlin:kotlin-stdlib"
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    shadow "com.google.code.gson:gson:${googleGson}"
-    // https://mvnrepository.com/artifact/com.github.multiformats/java-multibase
+    implementation "com.google.code.gson:gson:${googleGson}"
     implementation "com.github.multiformats:java-multibase:${javaMultibase}"
-    shadow "com.zmannotes:varint:${zmanVarint}"
-
-
-    // TODO look for a better solution
-    // currently it's a workaround for shadow of the above deps
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib"
-    testImplementation "com.google.code.gson:gson:${googleGson}"
-    testImplementation "com.zmannotes:varint:${zmanVarint}"
+    implementation "com.zmannotes:varint:${zmanVarint}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter-params:${jUnitJupiter}"
@@ -71,23 +60,6 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "${jvmTarget}"
 }
 
-// TODO: remove once published to Maven
-shadowJar {
-    // @see https://youtrack.jetbrains.com/issue/KT-25709
-    exclude("**/*.kotlin_metadata")
-    exclude("**/*.kotlin_builtins")
-
-    dependencies {
-        include(dependency("com.github.multiformats:java-multibase"))
-    }
-
-    archiveClassifier.set("") // remove suffix `-all` as intellij can"t find the library otherwise
-
-    // NOTE as an option but optimizes not much for now
-    // https://imperceptiblethoughts.com/shadow/configuration/minimizing/
-    // minimize()
-}
-
 // benchmarks
 // jmh {
 //     benchmarkMode = ["thrpt", "avgt"]
@@ -109,16 +81,9 @@ java {
 
 publishing {
     publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-        //maven(MavenPublication) {
-        //    from components.java
+        mavenJava(MavenPublication) {
+            from components.java
             artifactId = project.artifactId
-            // the following is required only for shadow
-            // https://github.com/johnrengelman/shadow/issues/544
-            artifact sourcesJar
-            artifact javadocJar
-
             pom {
                 name = "Peer DID"
                 description = "Java/Kotlin Peer DID protocol implementation"
@@ -161,6 +126,8 @@ publishing {
 }
 
 signing {
+    required { isReleaseVersion }
+
     // ORG_GRADLE_PROJECT_signingKeyId=<gpg-signingKeyId> - in case of a sub-key
     // ORG_GRADLE_PROJECT_signingKey=<gpg-signingKey>
     // ORG_GRADLE_PROJECT_signingPassword=<gpg-signingPassword>
@@ -173,9 +140,16 @@ signing {
     useInMemoryPgpKeys(signingKey, signingPassword)
 
     // sign publishing.publications.maven
-    sign publishing.publications.shadow
+    sign publishing.publications.mavenJava
 }
 
+
+jar {
+    into("META-INF/maven/$project.group/$project.name") {
+        from { generatePomFileForMavenJavaPublication }
+        rename ".*", "pom.xml"
+    }
+}
 
 javadoc {
     if(JavaVersion.current().isJava9Compatible()) {
