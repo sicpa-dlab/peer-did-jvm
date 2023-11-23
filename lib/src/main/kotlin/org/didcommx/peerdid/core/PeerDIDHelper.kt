@@ -65,18 +65,28 @@ internal fun encodeService(service: JSON): String {
  * @throws IllegalArgumentException if service is not correctly decoded
  * @return decoded service
  */
-internal fun decodeService(encodedService: JSON, peerDID: PeerDID): List<Service>? {
-    if (encodedService.isEmpty())
+internal fun decodeService(encodedServices: List<JSON>, peerDID: PeerDID): List<Service>? {
+
+    if (encodedServices.isEmpty())
         return null
-    val decodedService = Base64.decodeBase64(encodedService).decodeToString()
+
+    val decodedServices = encodedServices.map { encodedService ->
+        Base64.decodeBase64(encodedService).decodeToString()
+    }
+
+    val decodedServicesJson = if (decodedServices.size == 1) {
+        decodedServices[0]
+    } else {
+        decodedServices.joinToString(separator = ",", prefix = "[", postfix = "]")
+    }
 
     val serviceMapList = try {
-        fromJsonToList(decodedService)
+        fromJsonToList(decodedServicesJson)
     } catch (e: JsonSyntaxException) {
         try {
-            listOf(fromJsonToMap(decodedService))
+            listOf(fromJsonToMap(decodedServicesJson))
         } catch (e: JsonSyntaxException) {
-            throw IllegalArgumentException("Invalid JSON $decodedService")
+            throw IllegalArgumentException("Invalid JSON $decodedServices")
         }
     }
 
