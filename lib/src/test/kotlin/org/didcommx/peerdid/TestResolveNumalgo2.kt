@@ -38,6 +38,12 @@ class TestResolveNumalgo2 {
     }
 
     @Test
+    fun testResolvePositiveIndividuallyEncodedServiceIs2ElementsArray() {
+        val realValue = resolvePeerDID(PEER_DID_NUMALGO_2_2_ENCODED_SERVICES_INDIVIDUALLY)
+        assertEquals(fromJson(DID_DOC_NUMALGO_2_MULTIBASE_2_SERVICES_INDIVIDUALLY), fromJson(realValue))
+    }
+
+    @Test
     fun testResolvePositiveNoService() {
         val realValue = resolvePeerDID(PEER_DID_NUMALGO_2_NO_SERVICES)
         assertEquals(fromJson(DID_DOC_NUMALGO_2_MULTIBASE_NO_SERVICES), fromJson(realValue))

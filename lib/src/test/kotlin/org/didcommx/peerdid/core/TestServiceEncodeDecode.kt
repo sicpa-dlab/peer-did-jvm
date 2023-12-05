@@ -38,7 +38,7 @@ class TestServiceEncodeDecode {
             )
         )
         val service = decodeService(
-            "eyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludCIsInIiOlsiZGlkOmV4YW1wbGU6c29tZW1lZGlhdG9yI3NvbWVrZXkiXSwiYSI6WyJkaWRjb21tL3YyIiwiZGlkY29tbS9haXAyO2Vudj1yZmM1ODciXX0",
+            listOf("eyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludCIsInIiOlsiZGlkOmV4YW1wbGU6c29tZW1lZGlhdG9yI3NvbWVrZXkiXSwiYSI6WyJkaWRjb21tL3YyIiwiZGlkY29tbS9haXAyO2Vudj1yZmM1ODciXX0"),
             PEER_DID_NUMALGO_2
         )
         assertEquals(expected, service)
@@ -71,7 +71,7 @@ class TestServiceEncodeDecode {
             )
         )
         val service = decodeService(
-            "eyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludCJ9",
+            listOf("eyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludCJ9"),
             PEER_DID_NUMALGO_2
         )
         assertEquals(expected, service)
@@ -123,7 +123,37 @@ class TestServiceEncodeDecode {
             )
         )
         val service = decodeService(
-            "W3sidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9pbnQiLCJyIjpbImRpZDpleGFtcGxlOnNvbWVtZWRpYXRvciNzb21la2V5Il0sImEiOlsiZGlkY29tbS92MiIsImRpZGNvbW0vYWlwMjtlbnY9cmZjNTg3Il19LHsidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9pbnQyIiwiciI6WyJkaWQ6ZXhhbXBsZTpzb21lbWVkaWF0b3Ijc29tZWtleTIiXX1d",
+            listOf("W3sidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9pbnQiLCJyIjpbImRpZDpleGFtcGxlOnNvbWVtZWRpYXRvciNzb21la2V5Il0sImEiOlsiZGlkY29tbS92MiIsImRpZGNvbW0vYWlwMjtlbnY9cmZjNTg3Il19LHsidCI6ImRtIiwicyI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9pbnQyIiwiciI6WyJkaWQ6ZXhhbXBsZTpzb21lbWVkaWF0b3Ijc29tZWtleTIiXX1d"),
+            PEER_DID_NUMALGO_2
+        )
+        assertEquals(expected, service)
+    }
+    @Test
+    fun testDecodeServiceMultipleEntriesIndividualEncoded() {
+        val expected = listOf(
+            OtherService(
+                mapOf(
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
+                    "type" to "DIDCommMessaging",
+                    "serviceEndpoint" to "https://example.com/endpoint",
+                    "routingKeys" to listOf("did:example:somemediator#somekey"),
+                    "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587")
+                )
+            ),
+            OtherService(
+                mapOf(
+                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-1",
+                    "type" to "DIDCommMessaging",
+                    "serviceEndpoint" to "https://example.com/endpoint2",
+                    "routingKeys" to listOf("did:example:somemediator#somekey2")
+                )
+            )
+        )
+        val service = decodeService(
+            listOf(
+                "eyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludCIsInIiOlsiZGlkOmV4YW1wbGU6c29tZW1lZGlhdG9yI3NvbWVrZXkiXSwiYSI6WyJkaWRjb21tL3YyIiwiZGlkY29tbS9haXAyO2Vudj1yZmM1ODciXX0",
+                "eyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludDIiLCJyIjpbImRpZDpleGFtcGxlOnNvbWVtZWRpYXRvciNzb21la2V5MiJdfQ"
+            ),
             PEER_DID_NUMALGO_2
         )
         assertEquals(expected, service)
