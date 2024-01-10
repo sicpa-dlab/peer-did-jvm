@@ -45,7 +45,6 @@ private fun buildDIDDocNumalgo0(peerDID: PeerDID, format: VerificationMaterialFo
 private fun buildDIDDocNumalgo2(peerDID: PeerDID, format: VerificationMaterialFormatPeerDID): DIDDocPeerDID {
     val keys = peerDID.drop(11)
 
-    var service = ""
     val encodedServicesJson = mutableListOf<JSON>()
     val authentications = mutableListOf<VerificationMethodPeerDID>()
     val keyAgreement = mutableListOf<VerificationMethodPeerDID>()
