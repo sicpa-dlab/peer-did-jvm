@@ -22,7 +22,7 @@ data class DIDDocPeerDID(
          */
         fun fromJson(value: JSON): DIDDocPeerDID {
             val deserializer =
-                JsonDeserializer { json, typeOfT, context ->
+                JsonDeserializer { json, _, _ ->
                     val jsonObject = json?.asJsonObject
                         ?: throw IllegalArgumentException("Invalid JSON")
                     didDocFromJson(jsonObject)
