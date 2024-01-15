@@ -154,6 +154,43 @@ class TestCreateNumalgo2 {
         assert(isPeerDID(peerDIDAlgo2))
     }
 
+    @ParameterizedTest
+    @MethodSource("validKeys")
+    fun testCreateNumalgo2PositiveServicesIndividuallyEncoded(keys: TestData) {
+        val service = """[
+            {
+                "type": "DIDCommMessaging",
+                "serviceEndpoint": { 
+                    "uri" : "https://example.com/endpoint",
+                    "routingKeys": ["did:example:somemediator#somekey"]
+                }    
+            },
+            {
+                "type": "example",
+                "serviceEndpoint": { 
+                    "uri" : "https://example.com/endpoint2",
+                    "routingKeys": ["did:example:somemediator#somekey2"],
+                    "accept": ["didcomm/v2", "didcomm/aip2;env=rfc587"]
+                }
+            }
+            ]
+            """
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = keys.encKeys, signingKeys = keys.signingKeys,
+            service = service
+        )
+        assertEquals(
+            "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc" +
+                ".Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V" +
+                ".Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg" +
+                ".SeyJ0IjoiZG0iLCJzIjp7InVyaSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vZW5kcG9pbnQiLCJyIjpbImRpZDpleGFtcGxlOnNvbWVtZWRpYXRvciNzb21la2V5Il19fQ" +
+                ".SeyJ0IjoiZXhhbXBsZSIsInMiOnsidXJpIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludDIiLCJyIjpbImRpZDpleGFtcGxlOnNvbWVtZWRpYXRvciNzb21la2V5MiJdLCJhIjpbImRpZGNvbW0vdjIiLCJkaWRjb21tL2FpcDI7ZW52PXJmYzU4NyJdfX0",
+            peerDIDAlgo2
+        )
+        assert(isPeerDID(peerDIDAlgo2))
+    }
+
     @Test
     fun testCreateNumalgo2PositiveServiceNotArray() {
         val encryptionKeys = listOf(VALID_X25519_KEY_MULTIBASE)
@@ -164,6 +201,28 @@ class TestCreateNumalgo2 {
                 "type": "DIDCommMessaging",
                 "serviceEndpoint": "https://example.com/endpoint",
                 "routingKeys": ["did:example:somemediator#somekey"]
+            }
+            """
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+            service = service
+        )
+
+        assert(isPeerDID(peerDIDAlgo2))
+    }
+    @Test
+    fun testCreateNumalgo2PositiveServiceNotArrayWithServiceEndpointAsJson() {
+        val encryptionKeys = listOf(VALID_X25519_KEY_MULTIBASE)
+        val signingKeys = listOf(VALID_ED25519_KEY_1_MULTIBASE, VALID_ED25519_KEY_2_MULTIBASE)
+        val service =
+            """
+            {
+                "type": "DIDCommMessaging",
+                "serviceEndpoint": {
+                "uri": "https://example.com/endpoint",
+                "routingKeys": ["did:example:somemediator#somekey"]
+                }
             }
             """
 
@@ -197,6 +256,29 @@ class TestCreateNumalgo2 {
     }
 
     @Test
+    fun testCreateNumalgo2PositiveServiceMinimalFieldsWithServiceEndpointAsJson() {
+        val encryptionKeys = listOf(VALID_X25519_KEY_MULTIBASE)
+        val signingKeys = listOf(VALID_ED25519_KEY_1_MULTIBASE, VALID_ED25519_KEY_2_MULTIBASE)
+
+        val service =
+            """
+            {
+                "type": "DIDCommMessaging",
+                "serviceEndpoint": { 
+                    "uri": "https://example.com/endpoint"
+                }
+            }
+            """
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+            service = service
+        )
+
+        assert(isPeerDID(peerDIDAlgo2))
+    }
+
+    @Test
     fun testCreateNumalgo2PositiveServiceArrayOf1Element() {
         val encryptionKeys = listOf(VALID_X25519_KEY_MULTIBASE)
         val signingKeys = listOf(VALID_ED25519_KEY_1_MULTIBASE, VALID_ED25519_KEY_2_MULTIBASE)
@@ -218,7 +300,104 @@ class TestCreateNumalgo2 {
 
         assert(isPeerDID(peerDIDAlgo2))
     }
+    @Test
+    fun testCreateNumalgo2PositiveServiceArrayOf1ElementWithServiceEndpointAsJson() {
+        val encryptionKeys = listOf(VALID_X25519_KEY_MULTIBASE)
+        val signingKeys = listOf(VALID_ED25519_KEY_1_MULTIBASE, VALID_ED25519_KEY_2_MULTIBASE)
 
+        val service = """
+        [
+            {
+                "type": "DIDCommMessaging",
+                "serviceEndpoint": {
+                "uri": "https://example.com/endpoint",
+                "routingKeys": ["did:example:somemediator#somekey"]
+                }
+            }    
+        ]
+        """
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+            service = service
+        )
+
+        assert(isPeerDID(peerDIDAlgo2))
+    }
+    @Test
+    /**
+     * @see https://identity.foundation/peer-did-method-spec/#method-2-multiple-inception-key-without-doc
+     * */
+    fun testCreateNumalgo2PositiveServiceArrayOf1ElementUsingNewPeerDidSpec() {
+        val encryptionKeys = listOf(VALID_X25519_KEY_MULTIBASE)
+        val signingKeys = listOf(VALID_ED25519_KEY_1_MULTIBASE, VALID_ED25519_KEY_2_MULTIBASE)
+
+        val service = """
+        [
+          {
+          "type": "DIDCommMessaging",
+          "serviceEndpoint": {
+            "uri": "http://example.com/didcomm",
+            "accept": [
+              "didcomm/v2"
+            ],
+            "routingKeys": [
+              "did:example:123456789abcdefghi#key-1"
+            ]
+          }
+          }    
+        ]
+        """
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+            service = service
+        )
+
+        assert(isPeerDID(peerDIDAlgo2))
+    }
+    @Test
+    /**
+     * @see https://identity.foundation/peer-did-method-spec/#method-2-multiple-inception-key-without-doc
+     * */
+    fun testCreateNumalgo2PositiveServiceArrayOfMoreThen1ElementUsingNewPeerDidSpec() {
+        val encryptionKeys = listOf(VALID_X25519_KEY_MULTIBASE)
+        val signingKeys = listOf(VALID_ED25519_KEY_1_MULTIBASE, VALID_ED25519_KEY_2_MULTIBASE)
+
+        val service = """
+        [
+          {
+          "type": "DIDCommMessaging",
+          "serviceEndpoint": {
+            "uri": "http://example.com/didcomm",
+            "accept": [
+              "didcomm/v2"
+            ],
+            "routingKeys": [
+              "did:example:123456789abcdefghi#key-1"
+            ]
+          }
+          },
+          {
+          "type": "example",
+          "serviceEndpoint": {
+            "uri": "http://example.com/didcomm",
+            "accept": ["didcomm/v2", "didcomm/aip2;env=rfc587"],
+            "routingKeys": [
+              "did:example:123456789abcdefghi#key-2"
+            ]
+          }
+          }    
+        ]
+        """
+
+        val peerDIDAlgo2 = createPeerDIDNumalgo2(
+            encryptionKeys = encryptionKeys, signingKeys = signingKeys,
+            service = service
+        )
+
+        assert(isPeerDID(peerDIDAlgo2))
+    }
     @Test
     fun testCreateNumalgo2PositiveServiceIsNull() {
         val encryptionKeys = listOf(VALID_X25519_KEY_MULTIBASE)

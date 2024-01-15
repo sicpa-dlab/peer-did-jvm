@@ -5,13 +5,12 @@ import org.didcommx.peerdid.DIDCommServicePeerDID
 import org.didcommx.peerdid.DIDDocPeerDID
 import org.didcommx.peerdid.OtherService
 import org.didcommx.peerdid.PublicKeyField
-import org.didcommx.peerdid.SERVICE_ACCEPT
 import org.didcommx.peerdid.SERVICE_DIDCOMM_MESSAGING
 import org.didcommx.peerdid.SERVICE_ENDPOINT
 import org.didcommx.peerdid.SERVICE_ID
-import org.didcommx.peerdid.SERVICE_ROUTING_KEYS
 import org.didcommx.peerdid.SERVICE_TYPE
 import org.didcommx.peerdid.Service
+import org.didcommx.peerdid.ServiceEndpoint
 import org.didcommx.peerdid.VerificationMaterialFormatPeerDID
 import org.didcommx.peerdid.VerificationMaterialPeerDID
 import org.didcommx.peerdid.VerificationMethodPeerDID
@@ -100,16 +99,21 @@ internal fun serviceFromJson(jsonObject: JsonObject): Service {
     if (type != SERVICE_DIDCOMM_MESSAGING)
         return OtherService(serviceMap)
 
-    val endpoint = jsonObject.get(SERVICE_ENDPOINT)?.asString
-    val routingKeys = jsonObject.get(SERVICE_ROUTING_KEYS)?.asJsonArray?.map { it.asString }
-    val accept = jsonObject.get(SERVICE_ACCEPT)?.asJsonArray?.map { it.asString }
+    val serviceEndpointObject = jsonObject.getAsJsonObject(SERVICE_ENDPOINT)
+    val uri = serviceEndpointObject?.get("uri")?.asString ?: ""
+    val routingKeys = serviceEndpointObject?.getAsJsonArray("routingKeys")?.map { it.asString } ?: emptyList()
+    val accept = serviceEndpointObject?.getAsJsonArray("accept")?.map { it.asString } ?: emptyList()
+
+    val serviceEndpoint = ServiceEndpoint(
+        uri = uri,
+        routingKeys = routingKeys,
+        accept = accept
+    )
 
     return DIDCommServicePeerDID(
         id = id,
         type = type,
-        serviceEndpoint = endpoint ?: "",
-        routingKeys = routingKeys ?: emptyList(),
-        accept = accept ?: emptyList()
+        serviceEndpoint = serviceEndpoint
     )
 }
 

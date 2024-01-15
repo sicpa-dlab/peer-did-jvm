@@ -2,6 +2,9 @@
 
 package org.didcommx.peerdid.core
 
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import io.ipfs.multibase.binary.Base64
 import org.didcommx.peerdid.JSON
@@ -12,6 +15,7 @@ import org.didcommx.peerdid.SERVICE_DIDCOMM_MESSAGING
 import org.didcommx.peerdid.SERVICE_ENDPOINT
 import org.didcommx.peerdid.SERVICE_ROUTING_KEYS
 import org.didcommx.peerdid.SERVICE_TYPE
+import org.didcommx.peerdid.SERVICE_URI
 import org.didcommx.peerdid.Service
 import org.didcommx.peerdid.VerificationMaterialAgreement
 import org.didcommx.peerdid.VerificationMaterialAuthentication
@@ -21,7 +25,6 @@ import org.didcommx.peerdid.VerificationMethodPeerDID
 import org.didcommx.peerdid.VerificationMethodTypeAgreement
 import org.didcommx.peerdid.VerificationMethodTypeAuthentication
 import org.didcommx.peerdid.VerificationMethodTypePeerDID
-
 internal enum class Numalgo2Prefix(val prefix: Char) {
     AUTHENTICATION('V'),
     KEY_AGREEMENT('E'),
@@ -34,6 +37,7 @@ private val ServicePrefix = mapOf(
     SERVICE_DIDCOMM_MESSAGING to "dm",
     SERVICE_ROUTING_KEYS to "r",
     SERVICE_ACCEPT to "a",
+    SERVICE_URI to "uri",
 )
 
 /**
@@ -45,6 +49,35 @@ private val ServicePrefix = mapOf(
  */
 internal fun encodeService(service: JSON): String {
     validateJson(service)
+    val trimmedService = service.trim()
+    val gson = Gson()
+    return when {
+        trimmedService.startsWith("[") -> {
+            /**
+             * Process each service object individually if 'serviceEndpoint' is a JsonObject
+             * @see section To encode a service: https://identity.foundation/peer-did-method-spec/#method-2-multiple-inception-key-without-doc
+             */
+            val jsonArray = Gson().fromJson(trimmedService, JsonArray::class.java)
+            val firstElement = jsonArray.firstOrNull() as? JsonObject
+            val isServiceEndpointObject = firstElement?.get("serviceEndpoint") is JsonObject
+
+            if (isServiceEndpointObject) { // New Peer Did Spec
+                jsonArray.joinToString(separator = "") { jsonElement ->
+                    encodeIndividualService(jsonElement.toString())
+                }
+            } else {
+                // Old approach combine service encoded
+                encodeIndividualService(trimmedService)
+            }
+        }
+        trimmedService.startsWith("{") -> {
+            encodeIndividualService(trimmedService)
+        }
+        else -> throw IllegalArgumentException("Invalid JSON format")
+    }
+}
+
+fun encodeIndividualService(service: JSON): String {
     val serviceToEncode = service.replace(Regex("[\n\t\\s]*"), "")
         .replace(SERVICE_TYPE, ServicePrefix.getValue(SERVICE_TYPE))
         .replace(SERVICE_ENDPOINT, ServicePrefix.getValue(SERVICE_ENDPOINT))
@@ -96,14 +129,31 @@ internal fun decodeService(encodedServices: List<JSON>, peerDID: PeerDID): List<
 
         val serviceType = serviceMap.getValue(ServicePrefix.getValue(SERVICE_TYPE)).toString()
             .replace(ServicePrefix.getValue(SERVICE_DIDCOMM_MESSAGING), SERVICE_DIDCOMM_MESSAGING)
-        val service = mutableMapOf<String, Any>(
-            "id" to "$peerDID#${serviceType.lowercase()}-$serviceNumber",
-            "type" to serviceType
-        )
-        serviceMap[ServicePrefix.getValue(SERVICE_ENDPOINT)]?.let { service.put(SERVICE_ENDPOINT, it) }
-        serviceMap[ServicePrefix.getValue(SERVICE_ROUTING_KEYS)]?.let { service.put(SERVICE_ROUTING_KEYS, it) }
-        serviceMap[ServicePrefix.getValue(SERVICE_ACCEPT)]?.let { service.put(SERVICE_ACCEPT, it) }
+        val serviceId = if (serviceMapList.size > 1) {
+            if (serviceNumber == 0) "#service" else "#service-$serviceNumber"
+        } else "#service"
 
+        val serviceEndpointMap = mutableMapOf<String, Any>()
+        when (val serviceEndpointValue = serviceMap[ServicePrefix.getValue(SERVICE_ENDPOINT)]) {
+            is String -> {
+                serviceMap[ServicePrefix.getValue(SERVICE_ENDPOINT)]?.let { serviceEndpointMap.put(SERVICE_URI, it) }
+                serviceMap[ServicePrefix.getValue(SERVICE_ROUTING_KEYS)]?.let { serviceEndpointMap.put(SERVICE_ROUTING_KEYS, it) }
+                serviceMap[ServicePrefix.getValue(SERVICE_ACCEPT)]?.let { serviceEndpointMap.put(SERVICE_ACCEPT, it) }
+            }
+            is Map<*, *> -> {
+                serviceEndpointValue[ServicePrefix.getValue(SERVICE_URI)]?.let { serviceEndpointMap.put(SERVICE_URI, it) }
+                serviceEndpointValue[ServicePrefix.getValue(SERVICE_ROUTING_KEYS)]?.let { serviceEndpointMap.put(SERVICE_ROUTING_KEYS, it) }
+                serviceEndpointValue[ServicePrefix.getValue(SERVICE_ACCEPT)]?.let { serviceEndpointMap.put(SERVICE_ACCEPT, it) }
+            }
+            else -> {
+                throw IllegalArgumentException("Service doesn't contain a valid Endpoint")
+            }
+        }
+        val service = mutableMapOf<String, Any>(
+            "id" to serviceId,
+            "type" to serviceType,
+            "serviceEndpoint" to serviceEndpointMap
+        )
         OtherService(service)
     }.toList()
 }
@@ -204,9 +254,9 @@ internal fun decodeMultibaseEncnumbasis(
     return DecodedEncumbasis(encnumbasis, verMaterial)
 }
 
-internal fun getVerificationMethod(did: String, decodedEncumbasis: DecodedEncumbasis) =
+internal fun getVerificationMethod(keyId: Int, did: String, decodedEncumbasis: DecodedEncumbasis) =
     VerificationMethodPeerDID(
-        id = "$did#${decodedEncumbasis.encnumbasis}",
+        id = "$did#key-$keyId",
         controller = did,
         verMaterial = decodedEncumbasis.verMaterial
     )
