@@ -88,25 +88,29 @@ data class VerificationMethodPeerDID(
 
 sealed interface Service
 
+data class ServiceEndpoint(
+    val uri: String,
+    val routingKeys: List<String>,
+    val accept: List<String>
+)
 data class OtherService(val data: Map<String, Any>) : Service
 
 data class DIDCommServicePeerDID(
     val id: String,
     val type: String,
-    val serviceEndpoint: String,
-    val routingKeys: List<String>,
-    val accept: List<String>
+    val serviceEndpoint: ServiceEndpoint,
 ) : Service {
 
-    fun toDict(): MutableMap<String, Any> {
-        val res = mutableMapOf<String, Any>(
+    fun toDict(): Map<String, Any> {
+        return mapOf(
             SERVICE_ID to id,
             SERVICE_TYPE to type,
+            SERVICE_ENDPOINT to mapOf(
+                SERVICE_URI to serviceEndpoint.uri,
+                SERVICE_ROUTING_KEYS to serviceEndpoint.routingKeys,
+                SERVICE_ACCEPT to serviceEndpoint.accept
+            )
         )
-        res[SERVICE_ENDPOINT] = serviceEndpoint
-        res[SERVICE_ROUTING_KEYS] = routingKeys
-        res[SERVICE_ACCEPT] = accept
-        return res
     }
 }
 
@@ -122,3 +126,4 @@ const val SERVICE_ENDPOINT = "serviceEndpoint"
 const val SERVICE_DIDCOMM_MESSAGING = "DIDCommMessaging"
 const val SERVICE_ROUTING_KEYS = "routingKeys"
 const val SERVICE_ACCEPT = "accept"
+const val SERVICE_URI = "uri"
