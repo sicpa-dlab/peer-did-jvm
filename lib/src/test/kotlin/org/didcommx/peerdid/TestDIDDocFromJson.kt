@@ -136,13 +136,14 @@ class TestDIDDocFromJson {
 
         val service = didDoc.service!![0]
         val expectedService = (fromJson(testData.didDoc)["service"] as List<Map<String, Any>>)[0]
+
         assertTrue(service is DIDCommServicePeerDID)
         assertEquals(expectedService["id"], service.id)
-        assertEquals(expectedService["serviceEndpoint"], service.serviceEndpoint)
         assertEquals(expectedService["type"], service.type)
-        assertEquals(expectedService["routingKeys"], service.routingKeys)
-        assertEquals(expectedService["accept"], service.accept)
-
+        val expectedServiceEndpoint = expectedService["serviceEndpoint"] as Map<String, Any>
+        assertEquals(expectedServiceEndpoint["uri"], service.serviceEndpoint.uri)
+        assertEquals(expectedServiceEndpoint["routingKeys"], service.serviceEndpoint.routingKeys)
+        assertEquals(expectedServiceEndpoint["accept"], service.serviceEndpoint.accept)
         assertEquals(listOf(expectedAuth1["id"], expectedAuth2["id"]), didDoc.authenticationKids)
         assertEquals(listOf(expectedAgreem["id"]), didDoc.agreementKids)
     }
@@ -161,10 +162,11 @@ class TestDIDDocFromJson {
             (fromJson(DID_DOC_NUMALGO_2_MULTIBASE_2_SERVICES)["service"] as List<Map<String, Any>>)[0]
         assertTrue(service1 is DIDCommServicePeerDID)
         assertEquals(expectedService1["id"], service1.id)
-        assertEquals(expectedService1["serviceEndpoint"], service1.serviceEndpoint)
         assertEquals(expectedService1["type"], service1.type)
-        assertEquals(expectedService1["routingKeys"], service1.routingKeys)
-        assertTrue(service1.accept.isEmpty())
+        val expectedServiceEndpoint1 = expectedService1["serviceEndpoint"] as Map<String, Any>
+        assertEquals(expectedServiceEndpoint1["uri"], service1.serviceEndpoint.uri)
+        assertEquals(expectedServiceEndpoint1["routingKeys"], service1.serviceEndpoint.routingKeys)
+        assertTrue(service1.serviceEndpoint.accept.isEmpty())
 
         val service2 = didDoc.service!![1]
         val expectedService2 =
@@ -193,13 +195,13 @@ class TestDIDDocFromJson {
         val service = didDoc.service!![0]
         assertTrue(service is DIDCommServicePeerDID)
         assertEquals(
-            "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc.Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V.Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg.SeyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludCJ9#didcommmessaging-0",
+            "#service",
             service.id
         )
-        assertEquals("https://example.com/endpoint", service.serviceEndpoint)
+        assertEquals("https://example.com/endpoint", service.serviceEndpoint.uri)
         assertEquals("DIDCommMessaging", service.type)
-        assertTrue(service.routingKeys.isEmpty())
-        assertTrue(service.accept.isEmpty())
+        assertTrue(service.serviceEndpoint.routingKeys.isEmpty())
+        assertTrue(service.serviceEndpoint.accept.isEmpty())
     }
 
     @Test

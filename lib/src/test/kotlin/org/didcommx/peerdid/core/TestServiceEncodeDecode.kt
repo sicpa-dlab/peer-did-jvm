@@ -29,19 +29,45 @@ class TestServiceEncodeDecode {
         val expected = listOf(
             OtherService(
                 mapOf(
-                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
+                    "id" to "#service",
                     "type" to "DIDCommMessaging",
-                    "serviceEndpoint" to "https://example.com/endpoint",
-                    "routingKeys" to listOf("did:example:somemediator#somekey"),
-                    "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587"),
+                    "serviceEndpoint" to mapOf(
+                        "uri" to "https://example.com/endpoint",
+                        "routingKeys" to listOf("did:example:somemediator#somekey"),
+                        "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587"),
+                    )
                 )
             )
+
         )
         val service = decodeService(
             listOf("eyJ0IjoiZG0iLCJzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9lbmRwb2ludCIsInIiOlsiZGlkOmV4YW1wbGU6c29tZW1lZGlhdG9yI3NvbWVrZXkiXSwiYSI6WyJkaWRjb21tL3YyIiwiZGlkY29tbS9haXAyO2Vudj1yZmM1ODciXX0"),
             PEER_DID_NUMALGO_2
         )
         assertEquals(expected, service)
+    }
+
+    @Test
+    fun testEncodeServiceEndpointFields() {
+        assertEquals(
+            ".SeyJ0IjoiZG0iLCJzIjp7InVyaSI6Imh0dHA6Ly9leGFtcGxlLmNvbS9kaWRjb21tIiwiYSI6WyJkaWRjb21tL3YyIl0sInIiOlsiZGlkOmV4YW1wbGU6MTIzNDU2Nzg5YWJjZGVmZ2hpI2tleS0xIl19fQ",
+            encodeService(
+                """
+                        {
+                          "type": "DIDCommMessaging",
+                          "serviceEndpoint": {
+                            "uri": "http://example.com/didcomm",
+                            "accept": [
+                              "didcomm/v2"
+                            ],
+                            "routingKeys": [
+                              "did:example:123456789abcdefghi#key-1"
+                            ]
+                          }
+                        }
+                        """
+            )
+        )
     }
 
     @Test
@@ -58,15 +84,16 @@ class TestServiceEncodeDecode {
             )
         )
     }
-
     @Test
     fun testDecodeServiceMinimalFields() {
         val expected = listOf(
             OtherService(
                 mapOf(
-                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
+                    "id" to "#service",
                     "type" to "DIDCommMessaging",
-                    "serviceEndpoint" to "https://example.com/endpoint"
+                    "serviceEndpoint" to mapOf(
+                        "uri" to "https://example.com/endpoint",
+                    )
                 )
             )
         )
@@ -106,19 +133,23 @@ class TestServiceEncodeDecode {
         val expected = listOf(
             OtherService(
                 mapOf(
-                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
+                    "id" to "#service",
                     "type" to "DIDCommMessaging",
-                    "serviceEndpoint" to "https://example.com/endpoint",
-                    "routingKeys" to listOf("did:example:somemediator#somekey"),
-                    "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587")
+                    "serviceEndpoint" to mapOf(
+                        "uri" to "https://example.com/endpoint",
+                        "routingKeys" to listOf("did:example:somemediator#somekey"),
+                        "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587")
+                    )
                 )
             ),
             OtherService(
                 mapOf(
-                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-1",
+                    "id" to "#service-1",
                     "type" to "DIDCommMessaging",
-                    "serviceEndpoint" to "https://example.com/endpoint2",
-                    "routingKeys" to listOf("did:example:somemediator#somekey2")
+                    "serviceEndpoint" to mapOf(
+                        "uri" to "https://example.com/endpoint2",
+                        "routingKeys" to listOf("did:example:somemediator#somekey2"),
+                    )
                 )
             )
         )
@@ -133,19 +164,23 @@ class TestServiceEncodeDecode {
         val expected = listOf(
             OtherService(
                 mapOf(
-                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-0",
+                    "id" to "#service",
                     "type" to "DIDCommMessaging",
-                    "serviceEndpoint" to "https://example.com/endpoint",
-                    "routingKeys" to listOf("did:example:somemediator#somekey"),
-                    "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587")
+                    "serviceEndpoint" to mapOf(
+                        "uri" to "https://example.com/endpoint",
+                        "routingKeys" to listOf("did:example:somemediator#somekey"),
+                        "accept" to listOf("didcomm/v2", "didcomm/aip2;env=rfc587")
+                    )
                 )
             ),
             OtherService(
                 mapOf(
-                    "id" to "$PEER_DID_NUMALGO_2#didcommmessaging-1",
+                    "id" to "#service-1",
                     "type" to "DIDCommMessaging",
-                    "serviceEndpoint" to "https://example.com/endpoint2",
-                    "routingKeys" to listOf("did:example:somemediator#somekey2")
+                    "serviceEndpoint" to mapOf(
+                        "uri" to "https://example.com/endpoint2",
+                        "routingKeys" to listOf("did:example:somemediator#somekey2"),
+                    )
                 )
             )
         )

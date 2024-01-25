@@ -38,21 +38,20 @@ private fun buildDIDDocNumalgo0(peerDID: PeerDID, format: VerificationMaterialFo
     val decodedEncumbasis = decodeMultibaseEncnumbasisAuth(inceptionKey, format)
     return DIDDocPeerDID(
         did = peerDID,
-        authentication = listOf(getVerificationMethod(peerDID, decodedEncumbasis))
+        authentication = listOf(getVerificationMethod(1, peerDID, decodedEncumbasis))
     )
 }
 
 private fun buildDIDDocNumalgo2(peerDID: PeerDID, format: VerificationMaterialFormatPeerDID): DIDDocPeerDID {
     val keys = peerDID.drop(11)
 
-    var service = ""
     val encodedServicesJson = mutableListOf<JSON>()
     val authentications = mutableListOf<VerificationMethodPeerDID>()
     val keyAgreement = mutableListOf<VerificationMethodPeerDID>()
 
-    keys.split(".").forEach {
-        val prefix = it[0]
-        val value = it.drop(1)
+    keys.split(".").withIndex().forEach { (index, keyIt) ->
+        val prefix = keyIt[0]
+        val value = keyIt.drop(1)
 
         when (prefix) {
             Numalgo2Prefix.SERVICE.prefix -> {
@@ -60,12 +59,12 @@ private fun buildDIDDocNumalgo2(peerDID: PeerDID, format: VerificationMaterialFo
             }
             Numalgo2Prefix.AUTHENTICATION.prefix -> {
                 val decodedEncumbasis = decodeMultibaseEncnumbasisAuth(value, format)
-                authentications.add(getVerificationMethod(peerDID, decodedEncumbasis))
+                authentications.add(getVerificationMethod(index + 1, peerDID, decodedEncumbasis))
             }
 
             Numalgo2Prefix.KEY_AGREEMENT.prefix -> {
                 val decodedEncumbasis = decodeMultibaseEncnumbasisAgreement(value, format)
-                keyAgreement.add(getVerificationMethod(peerDID, decodedEncumbasis))
+                keyAgreement.add(getVerificationMethod(index + 1, peerDID, decodedEncumbasis))
             }
 
             else -> throw IllegalArgumentException("Unsupported transform part of PeerDID: $prefix")
