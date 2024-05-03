@@ -23,6 +23,7 @@ out/
 *.DS_Store
 .DS_Store
 .DS_Store?
+local.properties
 
 ### NetBeans ###
 /nbproject/private/

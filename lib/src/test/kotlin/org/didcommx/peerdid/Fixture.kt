@@ -367,3 +367,44 @@ const val DID_DOC_NUMALGO_2_MULTIBASE_MINIMAL_SERVICES = """
            ]
        }
     """
+
+const val PEER_DID_NUMALGO_2_LEGACY_SERVICES = "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc.Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V.Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg.SeyJ0IjoiZGlkLWNvbW11bmljYXRpb24iLCJpZCI6IiNzZXJ2aWNlLTEiLCJzIjoiZGlkY29tbTp0cmFuc3BvcnQvcXVldWUiLCJyZWNpcGllbnRLZXlzIjpbIiNrZXktMiJdLCJyIjpbXX0"
+
+const val DID_DOC_NUMALGO_2_MULTIBASE_LEGACY_SERVICES = """
+        {
+           "id": "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc.Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V.Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg.SeyJ0IjoiZGlkLWNvbW11bmljYXRpb24iLCJpZCI6IiNzZXJ2aWNlLTEiLCJzIjoiZGlkY29tbTp0cmFuc3BvcnQvcXVldWUiLCJyZWNpcGllbnRLZXlzIjpbIiNrZXktMiJdLCJyIjpbXX0",
+           "authentication": [
+               {
+                   "id": "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc.Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V.Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg.SeyJ0IjoiZGlkLWNvbW11bmljYXRpb24iLCJpZCI6IiNzZXJ2aWNlLTEiLCJzIjoiZGlkY29tbTp0cmFuc3BvcnQvcXVldWUiLCJyZWNpcGllbnRLZXlzIjpbIiNrZXktMiJdLCJyIjpbXX0#key-2",
+                   "type": "Ed25519VerificationKey2020",
+                   "controller": "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc.Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V.Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg.SeyJ0IjoiZGlkLWNvbW11bmljYXRpb24iLCJpZCI6IiNzZXJ2aWNlLTEiLCJzIjoiZGlkY29tbTp0cmFuc3BvcnQvcXVldWUiLCJyZWNpcGllbnRLZXlzIjpbIiNrZXktMiJdLCJyIjpbXX0",
+                   "publicKeyMultibase": "z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V"
+               },
+               {
+                   "id": "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc.Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V.Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg.SeyJ0IjoiZGlkLWNvbW11bmljYXRpb24iLCJpZCI6IiNzZXJ2aWNlLTEiLCJzIjoiZGlkY29tbTp0cmFuc3BvcnQvcXVldWUiLCJyZWNpcGllbnRLZXlzIjpbIiNrZXktMiJdLCJyIjpbXX0#key-3",
+                   "type": "Ed25519VerificationKey2020",
+                   "controller": "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc.Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V.Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg.SeyJ0IjoiZGlkLWNvbW11bmljYXRpb24iLCJpZCI6IiNzZXJ2aWNlLTEiLCJzIjoiZGlkY29tbTp0cmFuc3BvcnQvcXVldWUiLCJyZWNpcGllbnRLZXlzIjpbIiNrZXktMiJdLCJyIjpbXX0",
+                   "publicKeyMultibase": "z6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg"
+               }
+           ],
+           "keyAgreement": [
+               {
+                   "id": "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc.Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V.Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg.SeyJ0IjoiZGlkLWNvbW11bmljYXRpb24iLCJpZCI6IiNzZXJ2aWNlLTEiLCJzIjoiZGlkY29tbTp0cmFuc3BvcnQvcXVldWUiLCJyZWNpcGllbnRLZXlzIjpbIiNrZXktMiJdLCJyIjpbXX0#key-1",
+                   "type": "X25519KeyAgreementKey2020",
+                   "controller": "did:peer:2.Ez6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc.Vz6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V.Vz6MkgoLTnTypo3tDRwCkZXSccTPHRLhF4ZnjhueYAFpEX6vg.SeyJ0IjoiZGlkLWNvbW11bmljYXRpb24iLCJpZCI6IiNzZXJ2aWNlLTEiLCJzIjoiZGlkY29tbTp0cmFuc3BvcnQvcXVldWUiLCJyZWNpcGllbnRLZXlzIjpbIiNrZXktMiJdLCJyIjpbXX0",
+                   "publicKeyMultibase": "z6LSbysY2xFMRpGMhb7tFTLMpeuPRaqaWM1yECx2AtzE3KCc"
+               }
+           ],
+           "service": [
+               {
+                    "id": "#service",
+                    "type": "did-communication",
+                    "serviceEndpoint": {
+                        "uri": "didcomm:transport/queue",
+                        "routingKeys": []
+                    },
+                    "recipientKeys": ["#key-2"]
+                }
+           ]
+       }
+    """

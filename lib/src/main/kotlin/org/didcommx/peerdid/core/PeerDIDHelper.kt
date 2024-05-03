@@ -154,6 +154,11 @@ internal fun decodeService(encodedServices: List<JSON>, peerDID: PeerDID): List<
             "type" to serviceType,
             "serviceEndpoint" to serviceEndpointMap
         )
+        serviceMap.map { (key, value) ->
+            if (!ServicePrefix.containsValue(key) && key != "id") {
+                service[key] = value
+            }
+        }
         OtherService(service)
     }.toList()
 }

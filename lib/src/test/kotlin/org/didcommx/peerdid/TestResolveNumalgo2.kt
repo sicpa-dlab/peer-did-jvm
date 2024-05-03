@@ -56,6 +56,12 @@ class TestResolveNumalgo2 {
     }
 
     @Test
+    fun testResolvePositiveLegacyService() {
+        val realValue = resolvePeerDID(PEER_DID_NUMALGO_2_LEGACY_SERVICES)
+        assertEquals(fromJson(DID_DOC_NUMALGO_2_MULTIBASE_LEGACY_SERVICES), fromJson(realValue))
+    }
+
+    @Test
     fun testResolveUnsupportedNumalgoCode() {
         val ex = assertThrows<MalformedPeerDIDException> {
             resolvePeerDID(
